@@ -8,7 +8,12 @@ It automatically builds one agent per subfolder in a dataset directory and provi
 
 ## Installation
 
+Used Llama 3 8B locally with Ollama, install Ollama from the official website
+
 ```bash
+ollama pull llama3:8b
+ollama run llama3:8b
+
 git clone git@github.com:xqzyr/emRAG.git
 cd emRAG
 
