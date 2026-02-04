@@ -3,3 +3,4 @@ __pycache__/
 .env
 .DS_Store
 .conv_memory/
+.rag_cache/
