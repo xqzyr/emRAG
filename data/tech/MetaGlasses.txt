@@ -1,0 +1,5 @@
+Meta Glasses are smart glasses developed by Meta (formerly Facebook) in collaboration with eyewear companies.
+They integrate cameras, microphones, and speakers into a wearable glasses form factor.
+Meta Glasses are designed to support hands-free photo and video capture, audio playback, and voice assistant interaction.
+Privacy concerns around smart glasses include unauthorized recording and data collection.
+These devices are part of Meta's broader vision for augmented reality and the metaverse.

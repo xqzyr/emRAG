@@ -1,0 +1,5 @@
+A GPU, or Graphics Processing Unit, is a specialized processor designed for parallel computation.
+GPUs are widely used for rendering graphics in games and professional visualization.
+In recent years, GPUs have become essential for machine learning and artificial intelligence workloads.
+Major GPU manufacturers include NVIDIA, AMD, and Intel.
+Compared to CPUs, GPUs excel at handling thousands of simultaneous operations.

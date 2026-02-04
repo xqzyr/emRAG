@@ -1,0 +1,9 @@
+{
+  "fingerprint": "c0d3e9500f02032a344d9c085916bf5d05f792b99442af79393510077a8d6af4",
+  "model_name": "all-MiniLM-L6-v2",
+  "num_chunks": 3,
+  "emb_shape": [
+    3,
+    384
+  ]
+}
