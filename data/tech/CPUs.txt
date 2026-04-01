@@ -1,0 +1,7 @@
+A CPU, or central processing unit, is the primary processor in a computer responsible for executing instructions and managing system operations.
+
+CPUs typically have a smaller number of powerful cores compared to GPUs. These cores are optimized for sequential processing and complex decision-making tasks.
+
+CPUs are well suited for general-purpose computing, including running operating systems, handling user input, and managing applications. They are essential for tasks that require flexibility and control.
+
+While CPUs can perform parallel operations to some extent, they are generally less efficient than GPUs for highly parallel workloads such as graphics rendering or deep learning.

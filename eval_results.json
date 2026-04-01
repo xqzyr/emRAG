@@ -1,0 +1,667 @@
+[
+  {
+    "query": "What is the average lifespan of a dog?",
+    "answer": "FINAL_ANSWER: I don't know based on the provided documents.",
+    "used_sources": [],
+    "accuracy": 0.0,
+    "source_score": 0.0,
+    "retrieval": 0.0,
+    "top_scores": [
+      0.09523068691284611,
+      0.04065399102265814,
+      0.02605211731873557,
+      0.015857466958554084,
+      -0.00018424344696907173
+    ],
+    "had_low_confidence": true,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "self-contained factual question, no recent conversation context needed",
+      "retrieved_memory": [],
+      "rewritten_query": "average lifespan of a dog",
+      "attempt_failures": [
+        "Attempt 1 used agent 'animals' but was inadequate (Missing key query terms in evidence: ['what']). Missing terms: ['what']. Sources: ['data\\\\animals\\\\Dogs.txt', 'data\\\\animals\\\\Cats.txt', 'data\\\\animals\\\\Elephants.txt', 'data\\\\animals\\\\Wolves.txt'].",
+        "Attempt 2 used agent 'space' but was inadequate (Low retrieval confidence flag). Missing terms: ['what', 'average', 'lifespan', 'dog']. Sources: [].",
+        "Attempt 3 used agent 'tech' but was inadequate (Low retrieval confidence flag). Missing terms: ['what', 'average', 'lifespan', 'dog']. Sources: []."
+      ]
+    }
+  },
+  {
+    "query": "How long do domestic cats usually live?",
+    "answer": "FINAL_ANSWER: I don't know based on the provided documents.",
+    "used_sources": [],
+    "accuracy": 0.0,
+    "source_score": 0.0,
+    "retrieval": 0.0,
+    "top_scores": [
+      0.08486717399529159,
+      0.032112343950811535,
+      0.022349618184074313,
+      0.021924290777578646,
+      0.011021833797550389
+    ],
+    "had_low_confidence": true,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "standalone factual question, no recent context required",
+      "retrieved_memory": [],
+      "rewritten_query": "What is the average lifespan of domestic cats?",
+      "attempt_failures": [
+        "Attempt 1 used agent 'animals' but was inadequate (Missing key query terms in evidence: ['usually']). Missing terms: ['usually']. Sources: ['data\\\\animals\\\\Cats.txt', 'data\\\\animals\\\\Dogs.txt', 'data\\\\animals\\\\Elephants.txt', 'data\\\\animals\\\\Wolves.txt', 'data\\\\animals\\\\Lion.txt'].",
+        "Attempt 2 used agent 'space' but was inadequate (Too many missing terms (5): ['long', 'domestic', 'cats', 'usually', 'live']). Missing terms: ['long', 'domestic', 'cats', 'usually', 'live']. Sources: ['data\\\\space\\\\Earth.txt'].",
+        "Attempt 3 used agent 'tech' but was inadequate (Low retrieval confidence flag). Missing terms: ['long', 'domestic', 'cats', 'usually', 'live']. Sources: []."
+      ]
+    }
+  },
+  {
+    "query": "What do wolves typically eat?",
+    "answer": "FINAL_ANSWER: I don't know based on the provided documents.",
+    "used_sources": [],
+    "accuracy": 0.0,
+    "source_score": 0.0,
+    "retrieval": 0.0,
+    "top_scores": [
+      0.14970656633377075,
+      0.08042960565384061,
+      0.03822112327762154,
+      0.009751765429973603,
+      -0.0520730584859848
+    ],
+    "had_low_confidence": true,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "self-contained factual question, recent turns not relevant",
+      "retrieved_memory": [],
+      "rewritten_query": "Wolves typically eat ramens.",
+      "attempt_failures": [
+        "Attempt 1 used agent 'animals' but was inadequate (Missing key query terms in evidence: ['what']). Missing terms: ['what']. Sources: ['data\\\\animals\\\\Wolves.txt', 'data\\\\animals\\\\Dogs.txt', 'data\\\\animals\\\\Lion.txt'].",
+        "Attempt 2 used agent 'food' but was inadequate (Verifier rejected answer (not supported by retrieved context)). Missing terms: ['what', 'wolves']. Sources: ['data\\\\food\\\\Ramen.txt'].",
+        "Attempt 3 used agent 'tech' but was inadequate (Low retrieval confidence flag). Missing terms: ['what', 'wolves', 'typically', 'eat']. Sources: []."
+      ]
+    }
+  },
+  {
+    "query": "What do elephants mainly consume?",
+    "answer": "FINAL_ANSWER: I don't know based on the provided documents.",
+    "used_sources": [],
+    "accuracy": 0.0,
+    "source_score": 0.0,
+    "retrieval": 0.0,
+    "top_scores": [
+      0.08198987245559693,
+      0.035795234888792035,
+      0.028857734799385068,
+      0.010512757301330566,
+      -0.017733840644359587
+    ],
+    "had_low_confidence": true,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "standalone factual question about elephant diet",
+      "retrieved_memory": [],
+      "rewritten_query": "Elephants mainly consume what?",
+      "attempt_failures": [
+        "Attempt 1 used agent 'animals' but was inadequate (Missing key query terms in evidence: ['what']). Missing terms: ['what']. Sources: ['data\\\\animals\\\\Elephants.txt', 'data\\\\animals\\\\Wolves.txt', 'data\\\\animals\\\\Lion.txt'].",
+        "Attempt 2 used agent 'space' but was inadequate (Low retrieval confidence flag). Missing terms: ['what', 'elephants', 'mainly', 'consume']. Sources: [].",
+        "Attempt 3 used agent 'food' but was inadequate (Low retrieval confidence flag). Missing terms: ['what', 'elephants', 'mainly', 'consume']. Sources: []."
+      ]
+    }
+  },
+  {
+    "query": "Which animal has a stronger sense of smell than humans?",
+    "answer": "FINAL_ANSWER: I don't know based on the provided documents.",
+    "used_sources": [],
+    "accuracy": 0.0,
+    "source_score": 0.0,
+    "retrieval": 0.0,
+    "top_scores": [
+      0.08351165860730089,
+      0.03288885875522523,
+      0.03257556496500508,
+      0.02957161357221486,
+      0.025939510561564988
+    ],
+    "had_low_confidence": true,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "The query is a self-contained factual question that doesn't depend on recent turns, making Summary Tier sufficient.",
+      "retrieved_memory": [],
+      "rewritten_query": "What animal has a stronger sense of smell than humans?",
+      "attempt_failures": [
+        "Attempt 1 used agent 'animals' but was inadequate (Verifier rejected answer (not supported by retrieved context)). Missing terms: ['has', 'stronger']. Sources: ['data\\\\animals\\\\Dogs.txt', 'data\\\\animals\\\\Elephants.txt', 'data\\\\animals\\\\Cats.txt', 'data\\\\animals\\\\Lion.txt', 'data\\\\animals\\\\Wolves.txt'].",
+        "Attempt 2 used agent 'space' but was inadequate (Low retrieval confidence flag). Missing terms: ['which', 'animal', 'has', 'stronger', 'sense', 'smell', 'than', 'humans']. Sources: [].",
+        "Attempt 3 used agent 'food' but was inadequate (Low retrieval confidence flag). Missing terms: ['which', 'animal', 'has', 'stronger', 'sense', 'smell', 'than', 'humans']. Sources: []."
+      ]
+    }
+  },
+  {
+    "query": "Which animal is more independent, cats or dogs?",
+    "answer": "[Agent: animals]\nFINAL_ANSWER: Cats are generally considered more independent and self-sufficient than dogs, although they can still form strong bonds with their owners.\n\nEVIDENCE:\n- \"Unlike dogs, cats are generally less dependent on humans for social interaction, although they can still form strong bonds with their owners. They are often considered more independent and self-sufficient than dogs.\"\n\nSOURCES:\n- data\\animals\\Cats.txt\n- data\\animals\\Dogs.txt\n- data\\animals\\Lion.txt\n- data\\animals\\Wolves.txt",
+    "used_sources": [
+      "data\\animals\\Cats.txt",
+      "data\\animals\\Dogs.txt",
+      "data\\animals\\Lion.txt",
+      "data\\animals\\Wolves.txt"
+    ],
+    "accuracy": 1.0,
+    "source_score": 1.0,
+    "retrieval": 1.0,
+    "top_scores": [
+      0.44433116710972104,
+      0.2818446631905147,
+      0.24435767971434535,
+      0.2263919706902251,
+      0.121656978290657
+    ],
+    "had_low_confidence": false,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "Self-contained factual question; no recent context required",
+      "retrieved_memory": [],
+      "rewritten_query": "What is more independent cats or dogs"
+    }
+  },
+  {
+    "query": "What is a GPU used for?",
+    "answer": "FINAL_ANSWER: I don't know based on the provided documents.",
+    "used_sources": [],
+    "accuracy": 0.0,
+    "source_score": 0.0,
+    "retrieval": 1.0,
+    "top_scores": [
+      0.18561041524193983,
+      0.14989699302717127,
+      0.06431812100741151,
+      0.05681336989218351
+    ],
+    "had_low_confidence": true,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "Factual question about GPUs, not dependent on recent conversation turns.",
+      "retrieved_memory": [],
+      "rewritten_query": "What is a GPU used for ramen?",
+      "attempt_failures": [
+        "Attempt 1 used agent 'tech' but was inadequate (Missing key query terms in evidence: ['what']). Missing terms: ['what']. Sources: ['data\\\\tech\\\\GPUs.txt', 'data\\\\tech\\\\RAM.txt', 'data\\\\tech\\\\CPUs.txt', 'data\\\\tech\\\\SSDs.txt'].",
+        "Attempt 2 used agent 'food' but was inadequate (Abstention from context with zero query-term coverage). Missing terms: ['what', 'gpu', 'used']. Sources: ['data\\\\food\\\\Ramen.txt'].",
+        "Attempt 3 used agent 'space' but was inadequate (Abstention from weakly relevant retrieval (0.186)). Missing terms: ['what', 'gpu', 'used']. Sources: ['data\\\\space\\\\Saturn.txt']."
+      ]
+    }
+  },
+  {
+    "query": "Why are GPUs useful for machine learning tasks?",
+    "answer": "FINAL_ANSWER: I don't know based on the provided documents.",
+    "used_sources": [],
+    "accuracy": 0.0,
+    "source_score": 0.0,
+    "retrieval": 0.0,
+    "top_scores": [
+      0.10285148925800713,
+      0.09027513964398003,
+      0.060177875456172536,
+      0.059174766112893754,
+      0.04181411489358563
+    ],
+    "had_low_confidence": true,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "The query is self-contained and doesn't depend on recent turns, making Tier 2 suitable for this factual question.",
+      "retrieved_memory": [],
+      "rewritten_query": "What are GPUs useful for machine learning tasks?",
+      "attempt_failures": [
+        "Attempt 1 used agent 'tech' but was inadequate (Missing key query terms in evidence: ['why', 'useful']). Missing terms: ['why', 'useful']. Sources: ['data\\\\tech\\\\GPUs.txt', 'data\\\\tech\\\\CPUs.txt', 'data\\\\tech\\\\RAM.txt'].",
+        "Attempt 2 used agent 'space' but was inadequate (Low retrieval confidence flag). Missing terms: ['why', 'gpus', 'useful', 'machine', 'learning', 'tasks']. Sources: [].",
+        "Attempt 3 used agent 'animals' but was inadequate (Low retrieval confidence flag). Missing terms: ['why', 'gpus', 'useful', 'machine', 'learning', 'tasks']. Sources: []."
+      ]
+    }
+  },
+  {
+    "query": "What is the main function of a CPU?",
+    "answer": "FINAL_ANSWER: I don't know based on the provided documents.",
+    "used_sources": [],
+    "accuracy": 0.0,
+    "source_score": 0.0,
+    "retrieval": 0.0,
+    "top_scores": [
+      0.10421523633880173,
+      0.08660400509834289,
+      0.08301990758545152,
+      0.08286123286640626,
+      0.0751128202230192
+    ],
+    "had_low_confidence": true,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "The query appears to be a self-contained factual question, not dependent on recent conversation turns.",
+      "retrieved_memory": [],
+      "rewritten_query": "What is the main function of a CPU?",
+      "attempt_failures": [
+        "Attempt 1 used agent 'tech' but was inadequate (Missing key query terms in evidence: ['what', 'main', 'function']). Missing terms: ['what', 'main', 'function']. Sources: ['data\\\\tech\\\\CPUs.txt', 'data\\\\tech\\\\GPUs.txt', 'data\\\\tech\\\\RAM.txt'].",
+        "Attempt 2 used agent 'food' but was inadequate (Too many missing terms (4): ['what', 'main', 'function', 'cpu']). Missing terms: ['what', 'main', 'function', 'cpu']. Sources: ['data\\\\food\\\\Pizza.txt'].",
+        "Attempt 3 used agent 'animals' but was inadequate (Low retrieval confidence flag). Missing terms: ['what', 'main', 'function', 'cpu']. Sources: []."
+      ]
+    }
+  },
+  {
+    "query": "Which processor is better for sequential tasks?",
+    "answer": "FINAL_ANSWER: I don't know based on the provided documents.",
+    "used_sources": [],
+    "accuracy": 0.0,
+    "source_score": 0.0,
+    "retrieval": 0.0,
+    "top_scores": [
+      0.08353533019803265,
+      0.0660876457627026,
+      0.03341867347771284,
+      0.009404089084594273
+    ],
+    "had_low_confidence": true,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "The question appears to be self-contained and does not reference recent conversation turns, so Tier 2 is sufficient.",
+      "retrieved_memory": [],
+      "rewritten_query": "What processor is better for sequential tasks?",
+      "attempt_failures": [
+        "Attempt 1 used agent 'tech' but was inadequate (Verifier rejected answer (not supported by retrieved context)). Missing terms: ['which', 'better']. Sources: ['data\\\\tech\\\\CPUs.txt', 'data\\\\tech\\\\GPUs.txt'].",
+        "Attempt 2 used agent 'food' but was inadequate (Low retrieval confidence flag). Missing terms: ['which', 'processor', 'better', 'sequential', 'tasks']. Sources: [].",
+        "Attempt 3 used agent 'space' but was inadequate (Low retrieval confidence flag). Missing terms: ['which', 'processor', 'better', 'sequential', 'tasks']. Sources: []."
+      ]
+    }
+  },
+  {
+    "query": "What is RAM used for in a computer?",
+    "answer": "FINAL_ANSWER: I don't know based on the provided documents.",
+    "used_sources": [],
+    "accuracy": 0.0,
+    "source_score": 0.0,
+    "retrieval": 0.0,
+    "top_scores": [
+      0.10054957073610521,
+      0.061937847921412506,
+      0.05258773906849881,
+      0.016917586164509175,
+      -0.003051343620235819
+    ],
+    "had_low_confidence": true,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "The query appears to be self-contained and factual, without any explicit reference to recent turns. Therefore, Tier 2 (Summary) is sufficient for interpreting the question.",
+      "retrieved_memory": [],
+      "rewritten_query": "Is RAM used for in a computer?",
+      "attempt_failures": [
+        "Attempt 1 used agent 'tech' but was inadequate (Missing key query terms in evidence: ['what']). Missing terms: ['what']. Sources: ['data\\\\tech\\\\RAM.txt', 'data\\\\tech\\\\CPUs.txt', 'data\\\\tech\\\\SSDs.txt', 'data\\\\tech\\\\GPUs.txt'].",
+        "Attempt 2 used agent 'food' but was inadequate (Abstention from weakly relevant retrieval (0.152)). Missing terms: ['what', 'used', 'computer']. Sources: ['data\\\\food\\\\Ramen.txt'].",
+        "Attempt 3 used agent 'animals' but was inadequate (Low retrieval confidence flag). Missing terms: ['what', 'ram', 'used', 'computer']. Sources: []."
+      ]
+    }
+  },
+  {
+    "query": "Why are SSDs faster than hard drives?",
+    "answer": "FINAL_ANSWER: I don't know based on the provided documents.",
+    "used_sources": [],
+    "accuracy": 0.0,
+    "source_score": 0.0,
+    "retrieval": 0.0,
+    "top_scores": [
+      0.04835383061916623,
+      0.04615565275685363,
+      0.028216036409139632,
+      0.007231334969401359,
+      -0.005505402758717537
+    ],
+    "had_low_confidence": true,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "The question is self-contained and does not depend on recent turns, so Tier 2's summary knowledge should suffice.",
+      "retrieved_memory": [],
+      "rewritten_query": "SSDs faster than hard drives.",
+      "attempt_failures": [
+        "Attempt 1 used agent 'tech' but was inadequate (Missing key query terms in evidence: ['why']). Missing terms: ['why']. Sources: ['data\\\\tech\\\\SSDs.txt', 'data\\\\tech\\\\RAM.txt'].",
+        "Attempt 2 used agent 'food' but was inadequate (Low retrieval confidence flag). Missing terms: ['why', 'ssds', 'faster', 'than', 'hard', 'drives']. Sources: [].",
+        "Attempt 3 used agent 'animals' but was inadequate (Low retrieval confidence flag). Missing terms: ['why', 'ssds', 'faster', 'than', 'hard', 'drives']. Sources: []."
+      ]
+    }
+  },
+  {
+    "query": "What ingredients are typically used in ramen?",
+    "answer": "FINAL_ANSWER: I don't know based on the provided documents.",
+    "used_sources": [],
+    "accuracy": 0.0,
+    "source_score": 0.0,
+    "retrieval": 0.0,
+    "top_scores": [
+      0.1319392546720529,
+      0.07537176677600385,
+      0.05643678672553342,
+      0.023148263125251076
+    ],
+    "had_low_confidence": true,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "Self-contained factual question, no recent turns or context required.",
+      "retrieved_memory": [],
+      "rewritten_query": "What ingredients are typically used in ramen?",
+      "attempt_failures": [
+        "Attempt 1 used agent 'food' but was inadequate (Missing key query terms in evidence: ['what']). Missing terms: ['what']. Sources: ['data\\\\food\\\\Ramen.txt', 'data\\\\food\\\\Sushi.txt', 'data\\\\food\\\\Pasta.txt'].",
+        "Attempt 2 used agent 'tech' but was inadequate (Low retrieval confidence flag). Missing terms: ['what', 'ingredients', 'typically', 'used', 'ramen']. Sources: [].",
+        "Attempt 3 used agent 'space' but was inadequate (Low retrieval confidence flag). Missing terms: ['what', 'ingredients', 'typically', 'used', 'ramen']. Sources: []."
+      ]
+    }
+  },
+  {
+    "query": "What are common toppings on pizza?",
+    "answer": "FINAL_ANSWER: I don't know based on the provided documents.",
+    "used_sources": [],
+    "accuracy": 0.0,
+    "source_score": 0.0,
+    "retrieval": 0.0,
+    "top_scores": [
+      0.11315769443359741,
+      0.03974570683709323,
+      0.019603466890843208,
+      0.018830118525056404,
+      -0.037455026398623095
+    ],
+    "had_low_confidence": true,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "Self-contained factual question, doesn't require recent context",
+      "retrieved_memory": [],
+      "rewritten_query": "What are common toppings on pizza?",
+      "attempt_failures": [
+        "Attempt 1 used agent 'food' but was inadequate (Verifier rejected answer (not supported by retrieved context)). Missing terms: ['what']. Sources: ['data\\\\food\\\\Pizza.txt', 'data\\\\food\\\\Pasta.txt', 'data\\\\food\\\\applepie.txt', 'data\\\\food\\\\Sushi.txt'].",
+        "Attempt 2 used agent 'space' but was inadequate (Low retrieval confidence flag). Missing terms: ['what', 'common', 'toppings', 'pizza']. Sources: [].",
+        "Attempt 3 used agent 'tech' but was inadequate (Low retrieval confidence flag). Missing terms: ['what', 'common', 'toppings', 'pizza']. Sources: []."
+      ]
+    }
+  },
+  {
+    "query": "What are some types of pasta?",
+    "answer": "FINAL_ANSWER: I don't know based on the provided documents.",
+    "used_sources": [],
+    "accuracy": 0.0,
+    "source_score": 0.0,
+    "retrieval": 0.0,
+    "top_scores": [
+      0.07940205078048732,
+      0.06687641940607424,
+      0.05243641325962248,
+      0.008017882442628672,
+      -0.0007225678403762099
+    ],
+    "had_low_confidence": true,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "Self-contained factual question that does not depend on recent turns",
+      "retrieved_memory": [],
+      "rewritten_query": "What are some types of pasta?",
+      "attempt_failures": [
+        "Attempt 1 used agent 'food' but was inadequate (Missing key query terms in evidence: ['what']). Missing terms: ['what']. Sources: ['data\\\\food\\\\Pasta.txt', 'data\\\\food\\\\Ramen.txt', 'data\\\\food\\\\Pizza.txt', 'data\\\\food\\\\Sushi.txt'].",
+        "Attempt 2 used agent 'space' but was inadequate (Abstention from weakly relevant retrieval (0.176)). Missing terms: ['what', 'types', 'pasta']. Sources: ['data\\\\space\\\\Saturn.txt'].",
+        "Attempt 3 used agent 'tech' but was inadequate (Low retrieval confidence flag). Missing terms: ['what', 'types', 'pasta']. Sources: []."
+      ]
+    }
+  },
+  {
+    "query": "What is sushi made of?",
+    "answer": "FINAL_ANSWER: I don't know based on the provided documents.",
+    "used_sources": [],
+    "accuracy": 0.0,
+    "source_score": 0.0,
+    "retrieval": 1.0,
+    "top_scores": [
+      0.17599538412043178,
+      0.1150968913273317,
+      0.06460654914617525,
+      0.05460894054598055
+    ],
+    "had_low_confidence": true,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "Self-contained factual question, recent context not relevant.",
+      "retrieved_memory": [],
+      "rewritten_query": "Is sushi made of?",
+      "attempt_failures": [
+        "Attempt 1 used agent 'food' but was inadequate (Verifier rejected answer (not supported by retrieved context)). Missing terms: ['what']. Sources: ['data\\\\food\\\\Sushi.txt', 'data\\\\food\\\\Pizza.txt', 'data\\\\food\\\\Ramen.txt', 'data\\\\food\\\\Pasta.txt'].",
+        "Attempt 2 used agent 'tech' but was inadequate (Abstention from weakly relevant retrieval (0.173)). Missing terms: ['what', 'sushi', 'made']. Sources: ['data\\\\tech\\\\SSDs.txt'].",
+        "Attempt 3 used agent 'space' but was inadequate (Abstention from weakly relevant retrieval (0.176)). Missing terms: ['what', 'sushi']. Sources: ['data\\\\space\\\\Saturn.txt']."
+      ]
+    }
+  },
+  {
+    "query": "Which planet supports life?",
+    "answer": "FINAL_ANSWER: I don't know based on the provided documents.",
+    "used_sources": [],
+    "accuracy": 0.0,
+    "source_score": 0.0,
+    "retrieval": 0.0,
+    "top_scores": [
+      0.050406070053577424,
+      0.040702414512634275,
+      0.030561985820531844,
+      -0.010780071839690208,
+      -0.01466902233660221
+    ],
+    "had_low_confidence": true,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "Self-contained factual question, no recent conversation context needed",
+      "retrieved_memory": [],
+      "rewritten_query": "What planet supports life?",
+      "attempt_failures": [
+        "Attempt 1 used agent 'space' but was inadequate (Missing key query terms in evidence: ['supports']). Missing terms: ['supports']. Sources: ['data\\\\space\\\\Earth.txt', 'data\\\\space\\\\Mars.txt', 'data\\\\space\\\\Jupiter.txt', 'data\\\\space\\\\Saturn.txt'].",
+        "Attempt 2 used agent 'animals' but was inadequate (Low retrieval confidence flag). Missing terms: ['which', 'planet', 'supports', 'life']. Sources: [].",
+        "Attempt 3 used agent 'food' but was inadequate (Low retrieval confidence flag). Missing terms: ['which', 'planet', 'supports', 'life']. Sources: []."
+      ]
+    }
+  },
+  {
+    "query": "Why is Mars called the Red Planet?",
+    "answer": "FINAL_ANSWER: I don't know based on the provided documents.",
+    "used_sources": [],
+    "accuracy": 0.0,
+    "source_score": 0.0,
+    "retrieval": 0.0,
+    "top_scores": [
+      0.0933420849324869,
+      0.037401171107102074,
+      0.03733764226853467,
+      0.00635528705065963,
+      -0.00033529680222272874
+    ],
+    "had_low_confidence": true,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "domain question, does not depend on recent context",
+      "retrieved_memory": [],
+      "rewritten_query": "What is Mars called the Red Planet",
+      "attempt_failures": [
+        "Attempt 1 used agent 'space' but was inadequate (Verifier rejected answer (not supported by retrieved context)). Missing terms: ['why', 'called']. Sources: ['data\\\\space\\\\Mars.txt', 'data\\\\space\\\\Jupiter.txt', 'data\\\\space\\\\Earth.txt', 'data\\\\space\\\\Saturn.txt'].",
+        "Attempt 2 used agent 'food' but was inadequate (Too many missing terms (4): ['why', 'mars', 'called', 'planet']). Missing terms: ['why', 'mars', 'called', 'planet']. Sources: ['data\\\\food\\\\applepie.txt'].",
+        "Attempt 3 used agent 'animals' but was inadequate (Low retrieval confidence flag). Missing terms: ['why', 'mars', 'called', 'red', 'planet']. Sources: []."
+      ]
+    }
+  },
+  {
+    "query": "What is Jupiter mainly made of?",
+    "answer": "FINAL_ANSWER: I don't know based on the provided documents.",
+    "used_sources": [],
+    "accuracy": 0.0,
+    "source_score": 0.0,
+    "retrieval": 0.0,
+    "top_scores": [
+      0.11607455676058083,
+      0.10192633892090275,
+      0.09205506267509551,
+      0.056239626527653186,
+      0.050130454519343164
+    ],
+    "had_low_confidence": true,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "Self-contained factual question, no recent conversation context needed",
+      "retrieved_memory": [],
+      "rewritten_query": "Jupiter mainly made of?",
+      "attempt_failures": [
+        "Attempt 1 used agent 'space' but was inadequate (Missing key query terms in evidence: ['what']). Missing terms: ['what']. Sources: ['data\\\\space\\\\Jupiter.txt', 'data\\\\space\\\\Saturn.txt', 'data\\\\space\\\\Earth.txt', 'data\\\\space\\\\Mars.txt'].",
+        "Attempt 2 used agent 'food' but was inadequate (Abstention from weakly relevant retrieval (0.182)). Missing terms: ['what', 'jupiter', 'mainly']. Sources: ['data\\\\food\\\\Pizza.txt'].",
+        "Attempt 3 used agent 'tech' but was inadequate (Low retrieval confidence flag). Missing terms: ['what', 'jupiter', 'mainly', 'made']. Sources: []."
+      ]
+    }
+  },
+  {
+    "query": "What is Saturn known for?",
+    "answer": "FINAL_ANSWER: I don't know based on the provided documents.",
+    "used_sources": [],
+    "accuracy": 0.0,
+    "source_score": 0.0,
+    "retrieval": 0.0,
+    "top_scores": [
+      0.10566431687852018,
+      0.0716667686051933,
+      0.020717410314241243,
+      0.004536884087941659,
+      0.0011963549980586533
+    ],
+    "had_low_confidence": true,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "Domain question that does not depend on recent turns, can be answered by summary",
+      "retrieved_memory": [],
+      "rewritten_query": "Is Saturn known for?",
+      "attempt_failures": [
+        "Attempt 1 used agent 'space' but was inadequate (Verifier rejected answer (not supported by retrieved context)). Missing terms: ['what']. Sources: ['data\\\\space\\\\Saturn.txt', 'data\\\\space\\\\Jupiter.txt', 'data\\\\space\\\\Mars.txt', 'data\\\\space\\\\Earth.txt'].",
+        "Attempt 2 used agent 'food' but was inadequate (Low retrieval confidence flag). Missing terms: ['what', 'saturn', 'known']. Sources: [].",
+        "Attempt 3 used agent 'animals' but was inadequate (Low retrieval confidence flag). Missing terms: ['what', 'saturn', 'known']. Sources: []."
+      ]
+    }
+  },
+  {
+    "query": "Tell me about ramen.",
+    "answer": "FINAL_ANSWER: I don't know based on the provided documents.",
+    "used_sources": [],
+    "accuracy": 0.0,
+    "source_score": 0.0,
+    "retrieval": 0.0,
+    "top_scores": [
+      0.08820838630199432,
+      0.06879311352968216,
+      0.017596234381198884,
+      -0.01279982328414917
+    ],
+    "had_low_confidence": true,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "The user query appears to be a standalone factual question about ramen, which does not depend on recent turns. The summary state can provide sufficient context.",
+      "retrieved_memory": [],
+      "rewritten_query": "Ramen",
+      "attempt_failures": [
+        "Attempt 1 used agent 'food' but was inadequate (Missing key query terms in evidence: ['tell']). Missing terms: ['tell']. Sources: ['data\\\\food\\\\Ramen.txt'].",
+        "Attempt 2 used agent 'tech' but was inadequate (Abstention from weakly relevant retrieval (0.176)). Missing terms: ['tell', 'ramen']. Sources: ['data\\\\tech\\\\RAM.txt'].",
+        "Attempt 3 used agent 'space' but was inadequate (Low retrieval confidence flag). Missing terms: ['tell', 'ramen']. Sources: []."
+      ]
+    }
+  },
+  {
+    "query": "What does it usually contain?",
+    "answer": "FINAL_ANSWER: I don't know based on the provided documents.",
+    "used_sources": [],
+    "accuracy": 0.0,
+    "source_score": 0.0,
+    "retrieval": 0.0,
+    "top_scores": [
+      0.13384837646357553,
+      0.11874292458720453,
+      0.06604429675782561,
+      0.026832161757397693
+    ],
+    "had_low_confidence": true,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "The question refers to 'it', which suggests a self-contained factual inquiry, making Tier 2 suitable for summarization.",
+      "retrieved_memory": [],
+      "rewritten_query": "Does it usually contain ramen?",
+      "attempt_failures": [
+        "Attempt 1 used agent 'food' but was inadequate (Verifier rejected answer (not supported by retrieved context)). Missing terms: ['what', 'does', 'usually', 'contain']. Sources: ['data\\\\food\\\\Ramen.txt', 'data\\\\food\\\\Pasta.txt', 'data\\\\food\\\\Sushi.txt'].",
+        "Attempt 2 used agent 'tech' but was inadequate (Too many missing terms (4): ['what', 'does', 'usually', 'contain']). Missing terms: ['what', 'does', 'usually', 'contain']. Sources: ['data\\\\tech\\\\RAM.txt'].",
+        "Attempt 3 used agent 'space' but was inadequate (Low retrieval confidence flag). Missing terms: ['what', 'does', 'it', 'usually', 'contain']. Sources: []."
+      ]
+    }
+  },
+  {
+    "query": "Explain GPUs.",
+    "answer": "FINAL_ANSWER: I don't know based on the provided documents.",
+    "used_sources": [],
+    "accuracy": 0.0,
+    "source_score": 0.0,
+    "retrieval": 0.0,
+    "top_scores": [
+      0.04724575281143188,
+      0.04683305025100708,
+      0.01168786883354187,
+      -0.005925103649497032,
+      -0.02666705399751663
+    ],
+    "had_low_confidence": true,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "The user query 'Explain GPUs' is a self-contained factual question that does not depend on recent turns, making Tier 2 the most suitable choice.",
+      "retrieved_memory": [],
+      "rewritten_query": "GPU explain",
+      "attempt_failures": [
+        "Attempt 1 used agent 'tech' but was inadequate (Missing key query terms in evidence: ['explain']). Missing terms: ['explain']. Sources: ['data\\\\tech\\\\GPUs.txt', 'data\\\\tech\\\\CPUs.txt', 'data\\\\tech\\\\RAM.txt'].",
+        "Attempt 2 used agent 'space' but was inadequate (Low retrieval confidence flag). Missing terms: ['explain', 'gpus']. Sources: [].",
+        "Attempt 3 used agent 'animals' but was inadequate (Low retrieval confidence flag). Missing terms: ['explain', 'gpus']. Sources: []."
+      ]
+    }
+  },
+  {
+    "query": "How are they different from CPUs?",
+    "answer": "FINAL_ANSWER: I don't know based on the provided documents.",
+    "used_sources": [],
+    "accuracy": 0.0,
+    "source_score": 0.0,
+    "retrieval": 0.0,
+    "top_scores": [
+      0.09644786946904663,
+      0.07778187645656372,
+      0.07367012337733804,
+      0.03101550102097835
+    ],
+    "had_low_confidence": true,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "The user question appears to be a self-contained factual query, not dependent on recent turns. Tier 2 (summary) is sufficient for this type of question.",
+      "retrieved_memory": [],
+      "rewritten_query": "What is their difference from CPUs?",
+      "attempt_failures": [
+        "Attempt 1 used agent 'tech' but was inadequate (Verifier rejected answer (not supported by retrieved context)). Missing terms: ['different']. Sources: ['data\\\\tech\\\\CPUs.txt', 'data\\\\tech\\\\GPUs.txt', 'data\\\\tech\\\\RAM.txt', 'data\\\\tech\\\\SSDs.txt'].",
+        "Attempt 2 used agent 'food' but was inadequate (Low retrieval confidence flag). Missing terms: ['they', 'different', 'from', 'cpus']. Sources: [].",
+        "Attempt 3 used agent 'space' but was inadequate (Low retrieval confidence flag). Missing terms: ['they', 'different', 'from', 'cpus']. Sources: []."
+      ]
+    }
+  }
+]

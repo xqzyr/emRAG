@@ -1,0 +1,7 @@
+RAM, or random access memory, is a type of computer memory used to store data that is actively being used by the system. It allows for fast access to information required by running programs.
+
+RAM is volatile memory, meaning that its contents are lost when the computer is powered off. This distinguishes it from storage devices such as hard drives and solid-state drives.
+
+The amount of RAM in a system can significantly affect performance, especially when running multiple applications or handling large datasets. More RAM allows the system to manage more tasks simultaneously.
+
+RAM works closely with the CPU to provide quick access to data, reducing the need to retrieve information from slower storage devices.

@@ -1,0 +1,129 @@
+[
+  {
+    "query": "What is the average lifespan of a dog?",
+    "expected_answer_keywords": ["10", "13", "years"],
+    "relevant_sources": ["Dogs.txt"]
+  },
+  {
+    "query": "How long do domestic cats usually live?",
+    "expected_answer_keywords": ["12", "18", "years"],
+    "relevant_sources": ["Cats.txt"]
+  },
+  {
+    "query": "What do wolves typically eat?",
+    "expected_answer_keywords": ["herbivores", "deer", "elk"],
+    "relevant_sources": ["Wolves.txt"]
+  },
+  {
+    "query": "What do elephants mainly consume?",
+    "expected_answer_keywords": ["grasses", "fruits", "leaves"],
+    "relevant_sources": ["Elephants.txt"]
+  },
+
+  {
+    "query": "Which animal has a stronger sense of smell than humans?",
+    "expected_answer_keywords": ["dogs", "smell"],
+    "relevant_sources": ["Dogs.txt"]
+  },
+  {
+    "query": "Which animal is more independent, cats or dogs?",
+    "expected_answer_keywords": ["cats", "independent"],
+    "relevant_sources": ["Cats.txt", "Dogs.txt"]
+  },
+
+  {
+    "query": "What is a GPU used for?",
+    "expected_answer_keywords": ["parallel", "graphics", "machine learning"],
+    "relevant_sources": ["GPUs.txt"]
+  },
+  {
+    "query": "Why are GPUs useful for machine learning tasks?",
+    "expected_answer_keywords": ["parallel", "matrix", "computation"],
+    "relevant_sources": ["GPUs.txt"]
+  },
+  {
+    "query": "What is the main function of a CPU?",
+    "expected_answer_keywords": ["instructions", "processing", "operations"],
+    "relevant_sources": ["CPUs.txt"]
+  },
+  {
+    "query": "Which processor is better for sequential tasks?",
+    "expected_answer_keywords": ["cpu", "sequential"],
+    "relevant_sources": ["CPUs.txt", "GPUs.txt"]
+  },
+
+  {
+    "query": "What is RAM used for in a computer?",
+    "expected_answer_keywords": ["memory", "data", "running programs"],
+    "relevant_sources": ["RAM.txt"]
+  },
+  {
+    "query": "Why are SSDs faster than hard drives?",
+    "expected_answer_keywords": ["no moving parts", "flash", "speed"],
+    "relevant_sources": ["SSDs.txt"]
+  },
+
+  {
+    "query": "What ingredients are typically used in ramen?",
+    "expected_answer_keywords": ["noodles", "broth", "meat", "eggs"],
+    "relevant_sources": ["Ramen.txt"]
+  },
+  {
+    "query": "What are common toppings on pizza?",
+    "expected_answer_keywords": ["cheese", "tomato", "meat", "vegetables"],
+    "relevant_sources": ["Pizza.txt"]
+  },
+  {
+    "query": "What are some types of pasta?",
+    "expected_answer_keywords": ["spaghetti", "penne", "fusilli"],
+    "relevant_sources": ["Pasta.txt"]
+  },
+  {
+    "query": "What is sushi made of?",
+    "expected_answer_keywords": ["rice", "fish", "seaweed"],
+    "relevant_sources": ["Sushi.txt"]
+  },
+
+  {
+    "query": "Which planet supports life?",
+    "expected_answer_keywords": ["earth", "life"],
+    "relevant_sources": ["Earth.txt"]
+  },
+  {
+    "query": "Why is Mars called the Red Planet?",
+    "expected_answer_keywords": ["red", "appearance"],
+    "relevant_sources": ["Mars.txt"]
+  },
+  {
+    "query": "What is Jupiter mainly made of?",
+    "expected_answer_keywords": ["hydrogen", "helium"],
+    "relevant_sources": ["Jupiter.txt"]
+  },
+  {
+    "query": "What is Saturn known for?",
+    "expected_answer_keywords": ["rings"],
+    "relevant_sources": ["Saturn.txt"]
+  },
+
+  {
+    "query": "Tell me about ramen.",
+    "expected_answer_keywords": ["noodles", "broth"],
+    "relevant_sources": ["Ramen.txt"]
+  },
+  {
+    "query": "What does it usually contain?",
+    "expected_answer_keywords": ["noodles", "broth", "toppings"],
+    "relevant_sources": ["Ramen.txt"]
+  },
+
+  {
+    "query": "Explain GPUs.",
+    "expected_answer_keywords": ["parallel", "processing"],
+    "relevant_sources": ["GPUs.txt"]
+  },
+  {
+    "query": "How are they different from CPUs?",
+    "expected_answer_keywords": ["parallel", "sequential"],
+    "relevant_sources": ["CPUs.txt", "GPUs.txt"]
+  }
+]

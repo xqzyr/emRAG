@@ -32,11 +32,44 @@ pip install sentence-transformers scikit-learn numpy requests
 python embeddingRAG.py --data_dir data
 ```
 
-### Debug mode
+### CLI Arguments
 
 ```bash
-python embeddingRAG.py --data_dir data --debug
+python embeddingRAG.py [OPTIONS]
 ```
+
+| Argument             | Description                                             | Default            |
+| -------------------- | ------------------------------------------------------- | ------------------ |
+| `--data_dir`         | Path to dataset directory                               | `data`             |
+| `--embed_model`      | SentenceTransformer model                               | `all-MiniLM-L6-v2` |
+| `--ollama_model`     | LLM used via Ollama                                     | `llama3:8b`        |
+| `--top_k`            | Number of retrieved chunks                              | `5`                |
+| `--min_score`        | Retrieval score threshold                               | `0.10`             |
+| `--retrieval_mode`   | Retrieval type (`dense_only`, `lexical_only`, `hybrid`) | `hybrid`           |
+| `--hybrid_alpha`     | Dense vs lexical weighting                              | `0.6`              |
+| `--memory_store_dir` | Path for long-term memory                               | `.conv_memory`     |
+| `--debug`            | Enable verbose debug output                             | `False`            |
+
+
+### Evaluation 
+
+
+
+```bash
+python eval.py [OPTIONS]
+```
+
+| Argument             | Description                                                        | Default             |
+| -------------------- | ------------------------------------------------------------------ | ------------------- |
+| `--dataset_path`     | Evaluation dataset                                                 | `eval_set.json`     |
+| `--data_dir`         | Data directory                                                     | `data`              |
+| `--memory_store_dir` | Memory store for eval                                              | `.conv_memory_eval` |
+| `--ollama_model`     | LLM model                                                          | `llama3:8b`         |
+| `--mode`             | System mode (`dense_only`, `lexical_only`, `single_agent`, `full`) | `full`              |
+| `--hybrid_alpha`     | Hybrid weighting                                                   | `0.6`               |
+| `--output_path`      | Output JSON file                                                   | `eval_results.json` |
+| `--debug`            | Debug mode                                                         | `False`             |
+
 
 On startup, the system builds or loads cached indexes and then enters interactive mode.
 

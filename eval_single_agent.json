@@ -1,0 +1,924 @@
+[
+  {
+    "query": "What is the average lifespan of a dog?",
+    "mode": "single_agent",
+    "answer": "[Agent: single_agent]\nFINAL_ANSWER: The average lifespan of a dog is typically around 10 to 13 years, although this can vary depending on breed and size.\n\nEVIDENCE:\n- \"The average lifespan of a dog typically ranges from 10 to 13 years, although this can vary depending on breed and size.\"\n\nSOURCES:\n- data\\animals\\Dogs.txt\n- data\\animals\\Cats.txt\n- data\\animals\\Elephants.txt\n- data\\animals\\Wolves.txt",
+    "used_sources": [
+      "data\\animals\\Dogs.txt",
+      "data\\animals\\Cats.txt",
+      "data\\animals\\Elephants.txt",
+      "data\\animals\\Wolves.txt"
+    ],
+    "selected_sources": [
+      "Cats.txt",
+      "Dogs.txt",
+      "Elephants.txt",
+      "Wolves.txt"
+    ],
+    "accuracy": 1.0,
+    "source_score": 1.0,
+    "retrieval_hit": 1.0,
+    "retrieval_recall": 1.0,
+    "selected_source_score": 1.0,
+    "latency_sec": 8.9924,
+    "top_scores": [
+      0.5077217602790655,
+      0.3239623391090296,
+      0.302982670004892,
+      0.26391427035433623,
+      0.09718932782202966
+    ],
+    "had_low_confidence": false,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "self-contained factual question, does not require recent conversation context",
+      "retrieved_memory": [],
+      "rewritten_query": "What is the average lifespan of a dog?"
+    }
+  },
+  {
+    "query": "How long do domestic cats usually live?",
+    "mode": "single_agent",
+    "answer": "[Agent: single_agent]\nFINAL_ANSWER: Domestic cats usually live for around 12 to 18 years, which is generally longer than that of many dog breeds.\n\nEVIDENCE:\n- \"The average lifespan of a domestic cat is typically between 12 and 18 years...\"\n- ...which is generally longer than that of many dog breeds.\"\n\nSOURCES:\n- data\\animals\\Cats.txt\n- data\\animals\\Dogs.txt\n- data\\animals\\Wolves.txt\n- data\\animals\\Lion.txt\n- data\\animals\\Elephants.txt",
+    "used_sources": [
+      "data\\animals\\Cats.txt",
+      "data\\animals\\Dogs.txt",
+      "data\\animals\\Wolves.txt",
+      "data\\animals\\Lion.txt",
+      "data\\animals\\Elephants.txt"
+    ],
+    "selected_sources": [
+      "Cats.txt",
+      "Dogs.txt",
+      "Elephants.txt",
+      "Lion.txt",
+      "Wolves.txt"
+    ],
+    "accuracy": 1.0,
+    "source_score": 1.0,
+    "retrieval_hit": 1.0,
+    "retrieval_recall": 1.0,
+    "selected_source_score": 1.0,
+    "latency_sec": 9.5431,
+    "top_scores": [
+      0.5266895888994202,
+      0.32089010752578706,
+      0.2517190106265975,
+      0.2283307203027597,
+      0.21977180300786245
+    ],
+    "had_low_confidence": false,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "self-contained factual question, likely covered by summary",
+      "retrieved_memory": [],
+      "rewritten_query": "How long do domestic cats usually live?"
+    }
+  },
+  {
+    "query": "What do wolves typically eat?",
+    "mode": "single_agent",
+    "answer": "[Agent: single_agent]\nFINAL_ANSWER: Wolves typically eat large herbivores such as deer and elk. They are highly skilled hunters and use coordinated strategies to capture prey.\n\nEVIDENCE:\n- \"The diet of wolves consists mainly of large herbivores such as deer and elk.\"\n- \"They are highly skilled hunters and use coordinated strategies to capture prey.\"\n\nSOURCES:\n- data\\animals\\Wolves.txt\n- data\\animals\\Dogs.txt\n- data\\animals\\Lion.txt\n- data\\animals\\Cats.txt\n- data\\animals\\Elephants.txt",
+    "used_sources": [
+      "data\\animals\\Wolves.txt",
+      "data\\animals\\Dogs.txt",
+      "data\\animals\\Lion.txt",
+      "data\\animals\\Cats.txt",
+      "data\\animals\\Elephants.txt"
+    ],
+    "selected_sources": [
+      "Cats.txt",
+      "Dogs.txt",
+      "Elephants.txt",
+      "Lion.txt",
+      "Wolves.txt"
+    ],
+    "accuracy": 1.0,
+    "source_score": 1.0,
+    "retrieval_hit": 1.0,
+    "retrieval_recall": 1.0,
+    "selected_source_score": 1.0,
+    "latency_sec": 9.4557,
+    "top_scores": [
+      0.49122254684514305,
+      0.2321328219396784,
+      0.21436132192611693,
+      0.15814920829284207,
+      0.15064356565914552
+    ],
+    "had_low_confidence": false,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "standalone factual question about wolf diet, does not require recent context",
+      "retrieved_memory": [],
+      "rewritten_query": "What do wolves typically eat?"
+    }
+  },
+  {
+    "query": "What do elephants mainly consume?",
+    "mode": "single_agent",
+    "answer": "[Agent: single_agent]\nFINAL_ANSWER: Elephants mainly consume grasses, fruits, bark, and leaves.\n\nEVIDENCE:\n- \"Elephants are herbivores and primarily consume grasses, fruits, bark, and leaves.\"\n- \"Due to their large size, they require a significant amount of food and water each day.\"\n\nSOURCES:\n- data\\animals\\Elephants.txt\n- data\\animals\\Wolves.txt\n- data\\animals\\Lion.txt\n- data\\animals\\Dogs.txt\n- data\\animals\\Fish.txt",
+    "used_sources": [
+      "data\\animals\\Elephants.txt",
+      "data\\animals\\Wolves.txt",
+      "data\\animals\\Lion.txt",
+      "data\\animals\\Dogs.txt",
+      "data\\animals\\Fish.txt"
+    ],
+    "selected_sources": [
+      "Dogs.txt",
+      "Elephants.txt",
+      "Fish.txt",
+      "Lion.txt",
+      "Wolves.txt"
+    ],
+    "accuracy": 1.0,
+    "source_score": 1.0,
+    "retrieval_hit": 1.0,
+    "retrieval_recall": 1.0,
+    "selected_source_score": 1.0,
+    "latency_sec": 9.1271,
+    "top_scores": [
+      0.42262237812147496,
+      0.17314007101560136,
+      0.16450783610343933,
+      0.130164098739624,
+      0.1262282431125641
+    ],
+    "had_low_confidence": false,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "Self-contained factual question, no recent turns or context to rely on.",
+      "retrieved_memory": [],
+      "rewritten_query": "What do elephants mainly consume?"
+    }
+  },
+  {
+    "query": "Which animal has a stronger sense of smell than humans?",
+    "mode": "single_agent",
+    "answer": "[Agent: single_agent]\nFINAL_ANSWER: Dogs have an extremely strong sense of smell, which is significantly more sensitive than that of humans.\n\nEVIDENCE:\n- \"They have an extremely strong sense of smell, which is significantly more sensitive than that of humans.\"\n\nSOURCES:\n- data\\animals\\Dogs.txt\n- data\\animals\\Elephants.txt\n- data\\animals\\Cats.txt\n- data\\animals\\Lion.txt\n- data\\animals\\Wolves.txt",
+    "used_sources": [
+      "data\\animals\\Dogs.txt",
+      "data\\animals\\Elephants.txt",
+      "data\\animals\\Cats.txt",
+      "data\\animals\\Lion.txt",
+      "data\\animals\\Wolves.txt"
+    ],
+    "selected_sources": [
+      "Cats.txt",
+      "Dogs.txt",
+      "Elephants.txt",
+      "Lion.txt",
+      "Wolves.txt"
+    ],
+    "accuracy": 1.0,
+    "source_score": 1.0,
+    "retrieval_hit": 1.0,
+    "retrieval_recall": 1.0,
+    "selected_source_score": 1.0,
+    "latency_sec": 8.9336,
+    "top_scores": [
+      0.2619882242086621,
+      0.23149315412385071,
+      0.15909488337701747,
+      0.14791482239558953,
+      0.14468325368211213
+    ],
+    "had_low_confidence": false,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "Factual question about animal senses, not dependent on recent turns",
+      "retrieved_memory": [],
+      "rewritten_query": "Which animal has a stronger sense of smell than humans?"
+    }
+  },
+  {
+    "query": "Which animal is more independent, cats or dogs?",
+    "mode": "single_agent",
+    "answer": "[Agent: single_agent]\nFINAL_ANSWER: Cats are generally considered more independent and self-sufficient than dogs.\n\nEVIDENCE:\n- \"Unlike dogs, cats are generally less dependent on humans for social interaction, although they can still form strong bonds with their owners. They are often considered more independent and self-sufficient than dogs.\"\n\nSOURCES:\n- data\\animals\\Cats.txt\n- data\\animals\\Dogs.txt\n- data\\animals\\Lion.txt\n- data\\animals\\Wolves.txt\n- data\\animals\\Elephants.txt",
+    "used_sources": [
+      "data\\animals\\Cats.txt",
+      "data\\animals\\Dogs.txt",
+      "data\\animals\\Lion.txt",
+      "data\\animals\\Wolves.txt",
+      "data\\animals\\Elephants.txt"
+    ],
+    "selected_sources": [
+      "Cats.txt",
+      "Dogs.txt",
+      "Elephants.txt",
+      "Lion.txt",
+      "Wolves.txt"
+    ],
+    "accuracy": 1.0,
+    "source_score": 1.0,
+    "retrieval_hit": 1.0,
+    "retrieval_recall": 1.0,
+    "selected_source_score": 1.0,
+    "latency_sec": 9.7031,
+    "top_scores": [
+      0.4141921745792435,
+      0.28353855346644447,
+      0.26203829742331325,
+      0.2494064969959658,
+      0.17314175006619612
+    ],
+    "had_low_confidence": false,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "Self-contained factual question that does not depend on recent turns",
+      "retrieved_memory": [],
+      "rewritten_query": "Which animal is more independent, cats or dogs?"
+    }
+  },
+  {
+    "query": "What is a GPU used for?",
+    "mode": "single_agent",
+    "answer": "[Agent: single_agent]\nFINAL_ANSWER: A GPU, or Graphics Processing Unit, is used for parallel computation and is widely used for rendering graphics in games and professional visualization.\n\nEVIDENCE:\n- \"GPUs are widely used for rendering graphics in games and professional visualization.\"\n- \"In recent years, GPUs have become essential for machine learning and artificial intelligence workloads.\"\n\nSOURCES:\n- data\\tech\\GPUs.txt\n- data\\tech\\CPUs.txt\n- data\\tech\\RAM.txt\n- data\\tech\\SSDs.txt\n- data\\tech\\MetaGlasses.txt",
+    "used_sources": [
+      "data\\tech\\GPUs.txt",
+      "data\\tech\\CPUs.txt",
+      "data\\tech\\RAM.txt",
+      "data\\tech\\SSDs.txt",
+      "data\\tech\\MetaGlasses.txt"
+    ],
+    "selected_sources": [
+      "CPUs.txt",
+      "GPUs.txt",
+      "MetaGlasses.txt",
+      "RAM.txt",
+      "SSDs.txt"
+    ],
+    "accuracy": 1.0,
+    "source_score": 1.0,
+    "retrieval_hit": 1.0,
+    "retrieval_recall": 1.0,
+    "selected_source_score": 1.0,
+    "latency_sec": 9.3303,
+    "top_scores": [
+      0.5774608344245578,
+      0.2989699343500357,
+      0.21250606344707573,
+      0.16213367702786638,
+      0.10379670966287217
+    ],
+    "had_low_confidence": false,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "The question is self-contained and doesn't depend on recent turns. Summary tier should be sufficient.",
+      "retrieved_memory": [],
+      "rewritten_query": "What is a GPU used for?"
+    }
+  },
+  {
+    "query": "Why are GPUs useful for machine learning tasks?",
+    "mode": "single_agent",
+    "answer": "[Agent: single_agent]\nFINAL_ANSWER: GPUs are useful for machine learning tasks because they excel at handling thousands of simultaneous operations, making them essential for parallel workloads such as deep learning.\n\nEVIDENCE:\n- \"Compared to CPUs, GPUs excel at handling thousands of simultaneous operations.\"\n- \"In recent years, GPUs have become essential for machine learning and artificial intelligence workloads.\"\n\nSOURCES:\n- data\\tech\\GPUs.txt\n- data\\tech\\CPUs.txt\n- data\\tech\\RAM.txt\n- data\\tech\\SSDs.txt\n- data\\tech\\MetaGlasses.txt",
+    "used_sources": [
+      "data\\tech\\GPUs.txt",
+      "data\\tech\\CPUs.txt",
+      "data\\tech\\RAM.txt",
+      "data\\tech\\SSDs.txt",
+      "data\\tech\\MetaGlasses.txt"
+    ],
+    "selected_sources": [
+      "CPUs.txt",
+      "GPUs.txt",
+      "MetaGlasses.txt",
+      "RAM.txt",
+      "SSDs.txt"
+    ],
+    "accuracy": 0.3333333333333333,
+    "source_score": 1.0,
+    "retrieval_hit": 1.0,
+    "retrieval_recall": 1.0,
+    "selected_source_score": 1.0,
+    "latency_sec": 9.582,
+    "top_scores": [
+      0.5300166766536166,
+      0.3660763518670518,
+      0.16091660998768326,
+      0.12896396033782315,
+      0.12086232303014698
+    ],
+    "had_low_confidence": false,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "The query is a self-contained factual question that does not require referencing recent conversation turns or older context. Tier 2 (summary) should be sufficient to provide an accurate answer.",
+      "retrieved_memory": [],
+      "rewritten_query": "Why are GPUs useful for machine learning tasks?"
+    }
+  },
+  {
+    "query": "What is the main function of a CPU?",
+    "mode": "single_agent",
+    "answer": "[Agent: single_agent]\nFINAL_ANSWER: The main function of a CPU is executing instructions and managing system operations.\n\nEVIDENCE:\n- \"A CPU, or central processing unit, is the primary processor in a computer responsible for executing instructions and managing system operations.\"\n- \"CPUs are well suited for general-purpose computing, including running operating systems, handling user input, and managing applications.\"\n\nSOURCES:\n- data\\tech\\CPUs.txt\n- data\\tech\\GPUs.txt\n- data\\tech\\RAM.txt\n- data\\food\\Pizza.txt\n- data\\space\\Jupiter.txt",
+    "used_sources": [
+      "data\\tech\\CPUs.txt",
+      "data\\tech\\GPUs.txt",
+      "data\\tech\\RAM.txt",
+      "data\\food\\Pizza.txt",
+      "data\\space\\Jupiter.txt"
+    ],
+    "selected_sources": [
+      "CPUs.txt",
+      "GPUs.txt",
+      "Jupiter.txt",
+      "Pizza.txt",
+      "RAM.txt"
+    ],
+    "accuracy": 1.0,
+    "source_score": 1.0,
+    "retrieval_hit": 1.0,
+    "retrieval_recall": 1.0,
+    "selected_source_score": 1.0,
+    "latency_sec": 9.9315,
+    "top_scores": [
+      0.4498038698514372,
+      0.23728694614454743,
+      0.2123594658386208,
+      0.13794936385075737,
+      0.12353814425430773
+    ],
+    "had_low_confidence": false,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "self-contained factual question, does not depend on recent turns",
+      "retrieved_memory": [],
+      "rewritten_query": "What is the main function of a CPU?"
+    }
+  },
+  {
+    "query": "Which processor is better for sequential tasks?",
+    "mode": "single_agent",
+    "answer": "[Agent: single_agent]\nFINAL_ANSWER: CPUs are better suited for sequential tasks due to their optimized cores.\n\nEVIDENCE:\n- \"These cores are optimized for sequential processing and complex decision-making tasks.\"\n- \"CPUs typically have a smaller number of powerful cores compared to GPUs. These cores are optimized for sequential processing and complex decision-making tasks.\"\n\nSOURCES:\n- data\\tech\\CPUs.txt\n- data\\tech\\GPUs.txt\n- data\\tech\\RAM.txt",
+    "used_sources": [
+      "data\\tech\\CPUs.txt",
+      "data\\tech\\GPUs.txt",
+      "data\\tech\\RAM.txt"
+    ],
+    "selected_sources": [
+      "CPUs.txt",
+      "GPUs.txt",
+      "RAM.txt"
+    ],
+    "accuracy": 1.0,
+    "source_score": 1.0,
+    "retrieval_hit": 1.0,
+    "retrieval_recall": 1.0,
+    "selected_source_score": 1.0,
+    "latency_sec": 9.2323,
+    "top_scores": [
+      0.42461315319222137,
+      0.22280723105435213,
+      0.13533211293551695,
+      0.09586562867769212,
+      0.07744533251138036
+    ],
+    "had_low_confidence": false,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "self-contained factual question, no recent context needed",
+      "retrieved_memory": [],
+      "rewritten_query": "Which processor is better for sequential tasks?"
+    }
+  },
+  {
+    "query": "What is RAM used for in a computer?",
+    "mode": "single_agent",
+    "answer": "FINAL_ANSWER: I don't know based on the provided documents.",
+    "used_sources": [],
+    "selected_sources": [
+      "CPUs.txt",
+      "GPUs.txt",
+      "RAM.txt",
+      "Ramen.txt",
+      "SSDs.txt"
+    ],
+    "accuracy": 0.0,
+    "source_score": 0.0,
+    "retrieval_hit": 1.0,
+    "retrieval_recall": 1.0,
+    "selected_source_score": 1.0,
+    "latency_sec": 10.123,
+    "top_scores": [
+      0.5617894994763395,
+      0.2374939819457064,
+      0.23539754619078013,
+      0.22361949273709358,
+      0.15295564817947033
+    ],
+    "had_low_confidence": true,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "Self-contained factual question that doesn't depend on recent turns",
+      "retrieved_memory": [],
+      "rewritten_query": "What is RAM used for in a computer?",
+      "attempt_failures": [
+        "Attempt 1 used agent 'single_agent' but was inadequate (Verifier rejected answer (not supported by retrieved context)). Missing terms: []. Sources: ['data\\\\tech\\\\RAM.txt', 'data\\\\tech\\\\SSDs.txt', 'data\\\\tech\\\\CPUs.txt', 'data\\\\tech\\\\GPUs.txt', 'data\\\\food\\\\Ramen.txt']."
+      ]
+    }
+  },
+  {
+    "query": "Why are SSDs faster than hard drives?",
+    "mode": "single_agent",
+    "answer": "[Agent: single_agent]\nFINAL_ANSWER: SSDs are faster than hard drives because they have no mechanical components, which leads to quicker data access speed and faster application loading.\n\nEVIDENCE:\n- \"SSDs are significantly faster than hard drives in terms of data access speed, which leads to quicker boot times and faster application loading.\"\n- \"A solid-state drive, or SSD, is a type of storage device that uses flash memory to store data. Unlike traditional hard disk drives, SSDs have no moving parts.\"\n\nSOURCES:\n- data\\tech\\SSDs.txt\n- data\\tech\\RAM.txt\n- data\\tech\\CPUs.txt",
+    "used_sources": [
+      "data\\tech\\SSDs.txt",
+      "data\\tech\\RAM.txt",
+      "data\\tech\\CPUs.txt"
+    ],
+    "selected_sources": [
+      "CPUs.txt",
+      "RAM.txt",
+      "SSDs.txt"
+    ],
+    "accuracy": 1.0,
+    "source_score": 1.0,
+    "retrieval_hit": 1.0,
+    "retrieval_recall": 1.0,
+    "selected_source_score": 1.0,
+    "latency_sec": 9.5972,
+    "top_scores": [
+      0.6011034907728409,
+      0.22380262245090207,
+      0.1287452500898163,
+      0.09588054255361324,
+      0.07801632860216517
+    ],
+    "had_low_confidence": false,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "Self-contained factual question that doesn't rely on recent conversation context",
+      "retrieved_memory": [],
+      "rewritten_query": "Why are SSDs faster than hard drives?"
+    }
+  },
+  {
+    "query": "What ingredients are typically used in ramen?",
+    "mode": "single_agent",
+    "answer": "FINAL_ANSWER: I don't know based on the provided documents.",
+    "used_sources": [],
+    "selected_sources": [
+      "Pasta.txt",
+      "RAM.txt",
+      "Ramen.txt",
+      "SSDs.txt",
+      "Sushi.txt"
+    ],
+    "accuracy": 0.0,
+    "source_score": 0.0,
+    "retrieval_hit": 1.0,
+    "retrieval_recall": 1.0,
+    "selected_source_score": 1.0,
+    "latency_sec": 9.9599,
+    "top_scores": [
+      0.4659526824918281,
+      0.23700831946471354,
+      0.1921460619099961,
+      0.12531278335270932,
+      0.10285276385242126
+    ],
+    "had_low_confidence": true,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "The query is self-contained and doesn't depend on recent conversation turns, so we can rely solely on summary information.",
+      "retrieved_memory": [],
+      "rewritten_query": "What ingredients are typically used in ramen?",
+      "attempt_failures": [
+        "Attempt 1 used agent 'single_agent' but was inadequate (Verifier rejected answer (not supported by retrieved context)). Missing terms: []. Sources: ['data\\\\food\\\\Ramen.txt', 'data\\\\food\\\\Sushi.txt', 'data\\\\food\\\\Pasta.txt', 'data\\\\tech\\\\RAM.txt', 'data\\\\tech\\\\SSDs.txt']."
+      ]
+    }
+  },
+  {
+    "query": "What are common toppings on pizza?",
+    "mode": "single_agent",
+    "answer": "[Agent: single_agent]\nFINAL_ANSWER: Common toppings on pizza include pepperoni, mushrooms, onions, olives, and vegetables.\n\nEVIDENCE:\n- \"Modern pizzas include toppings such as pepperoni, mushrooms, onions, olives, and vegetables.\"\n- \"The most traditional pizza is the Neapolitan pizza, made with tomatoes, mozzarella cheese, olive oil, and basil.\"\n\nSOURCES:\n- data\\food\\Pizza.txt\n- data\\food\\Pasta.txt\n- data\\food\\applepie.txt\n- data\\food\\Sushi.txt",
+    "used_sources": [
+      "data\\food\\Pizza.txt",
+      "data\\food\\Pasta.txt",
+      "data\\food\\applepie.txt",
+      "data\\food\\Sushi.txt"
+    ],
+    "selected_sources": [
+      "Pasta.txt",
+      "Pizza.txt",
+      "Sushi.txt",
+      "applepie.txt"
+    ],
+    "accuracy": 0.75,
+    "source_score": 1.0,
+    "retrieval_hit": 1.0,
+    "retrieval_recall": 1.0,
+    "selected_source_score": 1.0,
+    "latency_sec": 9.3908,
+    "top_scores": [
+      0.5210041676752366,
+      0.2496919267094652,
+      0.17190151943482201,
+      0.1700392280105891,
+      0.16010580000873434
+    ],
+    "had_low_confidence": false,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "The question is self-contained and factual, so we can rely on the summary tier to provide a sufficient answer.",
+      "retrieved_memory": [],
+      "rewritten_query": "What are common toppings on pizza?"
+    }
+  },
+  {
+    "query": "What are some types of pasta?",
+    "mode": "single_agent",
+    "answer": "[Agent: single_agent]\nFINAL_ANSWER: Some types of pasta include spaghetti, penne, and fusilli. Each type is suited to different kinds of sauces and dishes.\n\nEVIDENCE:\n- \"Common types of pasta include spaghetti, penne, and fusilli.\"\n- \"Each type is suited to different kinds of sauces and dishes.\"\n\nSOURCES:\n- data\\food\\Pasta.txt\n- data\\food\\Ramen.txt\n- data\\food\\Pizza.txt\n- data\\food\\Sushi.txt\n- data\\space\\Saturn.txt",
+    "used_sources": [
+      "data\\food\\Pasta.txt",
+      "data\\food\\Ramen.txt",
+      "data\\food\\Pizza.txt",
+      "data\\food\\Sushi.txt",
+      "data\\space\\Saturn.txt"
+    ],
+    "selected_sources": [
+      "Pasta.txt",
+      "Pizza.txt",
+      "Ramen.txt",
+      "Saturn.txt",
+      "Sushi.txt"
+    ],
+    "accuracy": 1.0,
+    "source_score": 1.0,
+    "retrieval_hit": 1.0,
+    "retrieval_recall": 1.0,
+    "selected_source_score": 1.0,
+    "latency_sec": 9.8217,
+    "top_scores": [
+      0.556998588022256,
+      0.255582424100788,
+      0.2509492395041744,
+      0.18476151678161468,
+      0.11313942175589146
+    ],
+    "had_low_confidence": false,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "self-contained factual question that does not depend on recent turns",
+      "retrieved_memory": [],
+      "rewritten_query": "What are some types of pasta?"
+    }
+  },
+  {
+    "query": "What is sushi made of?",
+    "mode": "single_agent",
+    "answer": "FINAL_ANSWER: I don't know based on the provided documents.",
+    "used_sources": [],
+    "selected_sources": [
+      "Pasta.txt",
+      "Pizza.txt",
+      "Ramen.txt",
+      "SSDs.txt",
+      "Sushi.txt"
+    ],
+    "accuracy": 0.0,
+    "source_score": 0.0,
+    "retrieval_hit": 1.0,
+    "retrieval_recall": 1.0,
+    "selected_source_score": 1.0,
+    "latency_sec": 9.2127,
+    "top_scores": [
+      0.5452482879517715,
+      0.229813512865579,
+      0.227866097228086,
+      0.20918461206022573,
+      0.15721914165509895
+    ],
+    "had_low_confidence": true,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "self-contained factual question, no recent context needed",
+      "retrieved_memory": [],
+      "rewritten_query": "What is sushi made of?",
+      "attempt_failures": [
+        "Attempt 1 used agent 'single_agent' but was inadequate (Verifier rejected answer (not supported by retrieved context)). Missing terms: []. Sources: ['data\\\\food\\\\Sushi.txt', 'data\\\\food\\\\Ramen.txt', 'data\\\\food\\\\Pizza.txt', 'data\\\\food\\\\Pasta.txt', 'data\\\\tech\\\\SSDs.txt']."
+      ]
+    }
+  },
+  {
+    "query": "Which planet supports life?",
+    "mode": "single_agent",
+    "answer": "FINAL_ANSWER: I don't know based on the provided documents.",
+    "used_sources": [],
+    "selected_sources": [
+      "Earth.txt",
+      "Elephants.txt",
+      "Jupiter.txt",
+      "Mars.txt",
+      "Saturn.txt"
+    ],
+    "accuracy": 0.0,
+    "source_score": 0.0,
+    "retrieval_hit": 1.0,
+    "retrieval_recall": 1.0,
+    "selected_source_score": 1.0,
+    "latency_sec": 8.7114,
+    "top_scores": [
+      0.4912358548219401,
+      0.33948324921734,
+      0.2662265741209088,
+      0.2564173738255701,
+      0.10850957036018372
+    ],
+    "had_low_confidence": true,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "Self-contained factual question about planets and life support",
+      "retrieved_memory": [],
+      "rewritten_query": "Which planet supports life?",
+      "attempt_failures": [
+        "Attempt 1 used agent 'single_agent' but was inadequate (Verifier rejected answer (not supported by retrieved context)). Missing terms: ['supports']. Sources: ['data\\\\space\\\\Earth.txt', 'data\\\\space\\\\Mars.txt', 'data\\\\space\\\\Jupiter.txt', 'data\\\\space\\\\Saturn.txt', 'data\\\\animals\\\\Elephants.txt']."
+      ]
+    }
+  },
+  {
+    "query": "Why is Mars called the Red Planet?",
+    "mode": "single_agent",
+    "answer": "FINAL_ANSWER: I don't know based on the provided documents.",
+    "used_sources": [],
+    "selected_sources": [
+      "Earth.txt",
+      "Jupiter.txt",
+      "Mars.txt",
+      "Saturn.txt"
+    ],
+    "accuracy": 0.0,
+    "source_score": 0.0,
+    "retrieval_hit": 1.0,
+    "retrieval_recall": 1.0,
+    "selected_source_score": 1.0,
+    "latency_sec": 9.4892,
+    "top_scores": [
+      0.5682666100528899,
+      0.29803371701210113,
+      0.27619205795850005,
+      0.23182995328904607,
+      0.08788905592371207
+    ],
+    "had_low_confidence": true,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "The question appears to be a self-contained factual query about the name of Mars, which does not require recent conversation context.",
+      "retrieved_memory": [],
+      "rewritten_query": "Why is Mars called the Red Planet?",
+      "attempt_failures": [
+        "Attempt 1 used agent 'single_agent' but was inadequate (Verifier rejected answer (not supported by retrieved context)). Missing terms: []. Sources: ['data\\\\space\\\\Mars.txt', 'data\\\\space\\\\Jupiter.txt', 'data\\\\space\\\\Earth.txt', 'data\\\\space\\\\Saturn.txt']."
+      ]
+    }
+  },
+  {
+    "query": "What is Jupiter mainly made of?",
+    "mode": "single_agent",
+    "answer": "FINAL_ANSWER: I don't know based on the provided documents.",
+    "used_sources": [],
+    "selected_sources": [
+      "Earth.txt",
+      "Jupiter.txt",
+      "Mars.txt",
+      "Pizza.txt",
+      "Saturn.txt"
+    ],
+    "accuracy": 0.0,
+    "source_score": 0.0,
+    "retrieval_hit": 1.0,
+    "retrieval_recall": 1.0,
+    "selected_source_score": 1.0,
+    "latency_sec": 9.5462,
+    "top_scores": [
+      0.48693650122339416,
+      0.39205327795340095,
+      0.25577648276617054,
+      0.20828704906245984,
+      0.19436247330204726
+    ],
+    "had_low_confidence": true,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "Self-contained factual question that does not depend on recent turns",
+      "retrieved_memory": [],
+      "rewritten_query": "What is Jupiter mainly made of?",
+      "attempt_failures": [
+        "Attempt 1 used agent 'single_agent' but was inadequate (Verifier rejected answer (not supported by retrieved context)). Missing terms: []. Sources: ['data\\\\space\\\\Jupiter.txt', 'data\\\\space\\\\Saturn.txt', 'data\\\\space\\\\Earth.txt', 'data\\\\space\\\\Mars.txt', 'data\\\\food\\\\Pizza.txt']."
+      ]
+    }
+  },
+  {
+    "query": "What is Saturn known for?",
+    "mode": "single_agent",
+    "answer": "[Agent: single_agent]\nFINAL_ANSWER: Saturn is known for its prominent ring system, which is composed of ice particles and rocky debris.\n\nEVIDENCE:\n- \"Saturn is a gas giant known for its prominent ring system, which is composed of ice particles and rocky debris.\"\n- \"It is the second-largest planet in the solar system and, like Jupiter, is primarily made of hydrogen and helium.\"\n\nSOURCES:\n- data\\space\\Saturn.txt\n- data\\space\\Jupiter.txt\n- data\\space\\Mars.txt\n- data\\space\\Earth.txt\n- data\\food\\Pizza.txt",
+    "used_sources": [
+      "data\\space\\Saturn.txt",
+      "data\\space\\Jupiter.txt",
+      "data\\space\\Mars.txt",
+      "data\\space\\Earth.txt",
+      "data\\food\\Pizza.txt"
+    ],
+    "selected_sources": [
+      "Earth.txt",
+      "Jupiter.txt",
+      "Mars.txt",
+      "Pizza.txt",
+      "Saturn.txt"
+    ],
+    "accuracy": 0.0,
+    "source_score": 1.0,
+    "retrieval_hit": 1.0,
+    "retrieval_recall": 1.0,
+    "selected_source_score": 1.0,
+    "latency_sec": 10.5591,
+    "top_scores": [
+      0.48494392974968026,
+      0.3127355862007941,
+      0.21165518944707884,
+      0.20658968058763955,
+      0.11804465434846768
+    ],
+    "had_low_confidence": false,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "The user asks a factual question about Saturn, which is self-contained and does not depend on recent turns or older conversation details.",
+      "retrieved_memory": [],
+      "rewritten_query": "What is Saturn known for?"
+    }
+  },
+  {
+    "query": "Tell me about ramen.",
+    "mode": "single_agent",
+    "answer": "[Agent: single_agent]\nFINAL_ANSWER: Ramen is a Japanese noodle soup dish consisting of wheat noodles served in a meat or fish-based broth. It originated from Chinese noodle soups and evolved into a staple of Japanese cuisine.\n\nEVIDENCE:\n- \"Ramen is a Japanese noodle soup dish consisting of wheat noodles served in a meat or fish-based broth.\"\n- \"It originated from Chinese noodle soups and evolved into a staple of Japanese cuisine.\"\n\nSOURCES:\n- data\\food\\Ramen.txt\n- data\\tech\\RAM.txt\n- data\\food\\Sushi.txt\n- data\\tech\\SSDs.txt\n- data\\food\\Pasta.txt",
+    "used_sources": [
+      "data\\food\\Ramen.txt",
+      "data\\tech\\RAM.txt",
+      "data\\food\\Sushi.txt",
+      "data\\tech\\SSDs.txt",
+      "data\\food\\Pasta.txt"
+    ],
+    "selected_sources": [
+      "Pasta.txt",
+      "RAM.txt",
+      "Ramen.txt",
+      "SSDs.txt",
+      "Sushi.txt"
+    ],
+    "accuracy": 1.0,
+    "source_score": 1.0,
+    "retrieval_hit": 1.0,
+    "retrieval_recall": 1.0,
+    "selected_source_score": 1.0,
+    "latency_sec": 9.5497,
+    "top_scores": [
+      0.5101873063458748,
+      0.1898119032382965,
+      0.16358120441436766,
+      0.1156966209411621,
+      0.11249218583106994
+    ],
+    "had_low_confidence": false,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "self-contained factual question, no recent context needed",
+      "retrieved_memory": [],
+      "rewritten_query": "Tell me about ramen."
+    }
+  },
+  {
+    "query": "What does it usually contain?",
+    "mode": "single_agent",
+    "answer": "[Agent: single_agent]\nFINAL_ANSWER: Pasta is what it usually contains.\n\nEVIDENCE:\n- \"Pasta dishes can include a variety of ingredients such as vegetables, meat, and cheese, making it a versatile and widely consumed food.\" (Context from [SOURCE: data\\food\\Pasta.txt | CHUNK_ID: 9 | SCORE: 0.169])\n\nSOURCES:\n- data\\food\\Pasta.txt\n- data\\food\\Sushi.txt\n- data\\space\\Earth.txt\n- data\\food\\Ramen.txt\n- data\\food\\Pizza.txt",
+    "used_sources": [
+      "data\\food\\Pasta.txt",
+      "data\\food\\Sushi.txt",
+      "data\\space\\Earth.txt",
+      "data\\food\\Ramen.txt",
+      "data\\food\\Pizza.txt"
+    ],
+    "selected_sources": [
+      "Earth.txt",
+      "Pasta.txt",
+      "Pizza.txt",
+      "Ramen.txt",
+      "Sushi.txt"
+    ],
+    "accuracy": 0.0,
+    "source_score": 1.0,
+    "retrieval_hit": 1.0,
+    "retrieval_recall": 1.0,
+    "selected_source_score": 1.0,
+    "latency_sec": 11.6676,
+    "top_scores": [
+      0.16912661086728484,
+      0.1497340142726898,
+      0.1472270979418298,
+      0.14656557774794202,
+      0.13162975649879602
+    ],
+    "had_low_confidence": false,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "self-contained factual question, no recent context required",
+      "retrieved_memory": [],
+      "rewritten_query": "What does it usually contain?"
+    }
+  },
+  {
+    "query": "Explain GPUs.",
+    "mode": "single_agent",
+    "answer": "[Agent: single_agent]\nFINAL_ANSWER: A GPU, or Graphics Processing Unit, is a specialized processor designed for parallel computation. It excels at handling thousands of simultaneous operations compared to CPUs.\n\nEVIDENCE:\n- \"GPUs excel at handling thousands of simultaneous operations.\"\n- \"A GPU, or Graphics Processing Unit, is a specialized processor designed for parallel computation.\"\n\nSOURCES:\n- data\\tech\\GPUs.txt\n- data\\tech\\CPUs.txt\n- data\\tech\\RAM.txt\n- data\\tech\\SSDs.txt",
+    "used_sources": [
+      "data\\tech\\GPUs.txt",
+      "data\\tech\\CPUs.txt",
+      "data\\tech\\RAM.txt",
+      "data\\tech\\SSDs.txt"
+    ],
+    "selected_sources": [
+      "CPUs.txt",
+      "GPUs.txt",
+      "RAM.txt",
+      "SSDs.txt"
+    ],
+    "accuracy": 1.0,
+    "source_score": 1.0,
+    "retrieval_hit": 1.0,
+    "retrieval_recall": 1.0,
+    "selected_source_score": 1.0,
+    "latency_sec": 9.5784,
+    "top_scores": [
+      0.5516113062608121,
+      0.327388523457038,
+      0.1637147068977356,
+      0.12066493034362792,
+      0.09745397865772247
+    ],
+    "had_low_confidence": false,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "The question appears to be a standalone factual query about GPUs, not referencing specific previous turns or context.",
+      "retrieved_memory": [],
+      "rewritten_query": "Explain GPUs."
+    }
+  },
+  {
+    "query": "How are they different from CPUs?",
+    "mode": "single_agent",
+    "answer": "FINAL_ANSWER: I don't know based on the provided documents.",
+    "used_sources": [],
+    "selected_sources": [
+      "CPUs.txt",
+      "GPUs.txt",
+      "RAM.txt"
+    ],
+    "accuracy": 0.0,
+    "source_score": 0.0,
+    "retrieval_hit": 1.0,
+    "retrieval_recall": 1.0,
+    "selected_source_score": 1.0,
+    "latency_sec": 12.9394,
+    "top_scores": [
+      0.4945296722159467,
+      0.45240924763216384,
+      0.11672193025280583,
+      0.08991454630726559,
+      0.08815432369395244
+    ],
+    "had_low_confidence": true,
+    "judge_rejected": false,
+    "debug": {
+      "tier": 2,
+      "router_rationale": "self-contained factual question about CPUs and their differences",
+      "retrieved_memory": [],
+      "rewritten_query": "Are GPUs different from CPUs?",
+      "attempt_failures": [
+        "Attempt 1 used agent 'single_agent' but was inadequate (Verifier rejected answer (not supported by retrieved context)). Missing terms: []. Sources: ['data\\\\tech\\\\GPUs.txt', 'data\\\\tech\\\\CPUs.txt', 'data\\\\tech\\\\RAM.txt']."
+      ]
+    }
+  }
+]
