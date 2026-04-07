@@ -419,13 +419,25 @@ class EmbeddingIndex:
 BASIC_STOPWORDS = {
     "the", "a", "an", "of", "in", "on", "and", "or", "for", "to", "with",
     "some", "please", "give", "me", "about",
-    "how", "do", "i", "is", "are", "you", "can", "my"
+    "how", "do", "i", "is", "are", "you", "can", "my",
+    "what", "why", "which", "who", "where", "when",
+    "tell", "explain", "describe", "define", "show",
+    "does", "did", "has", "have", "had",
+    "than", "then", "it", "they", "them", "their",
+    "usually", "typically", "generally", "mainly", "commonly",
+    "more", "most", "less", "better", "best",
+    "used", "useful", "different", "difference",
+    "function", "purpose", "called", "known"
 }
 
 def normalize_token(token: str) -> str:
     return "".join(c.lower() for c in token if c.isalnum())
 
 def extract_content_terms(text: str) -> List[str]:
+    """
+    Extract content-bearing terms only.
+    Keeps domain/entity words and removes generic question words and discourse words.
+    """
     terms = []
     for raw in text.split():
         tok = normalize_token(raw)
@@ -433,8 +445,17 @@ def extract_content_terms(text: str) -> List[str]:
             continue
         if tok in BASIC_STOPWORDS:
             continue
+        if len(tok) <= 2:
+            continue
         terms.append(tok)
-    return terms
+
+    seen = set()
+    deduped = []
+    for t in terms:
+        if t not in seen:
+            seen.add(t)
+            deduped.append(t)
+    return deduped
 
 def find_missing_query_terms(query: str, chunks: List[DocumentChunk]) -> List[str]:
     query_terms = extract_content_terms(query)
@@ -457,18 +478,19 @@ def build_context_from_chunks(
     chunks_with_scores: List[Tuple[DocumentChunk, float]],
     min_score: float = 0.15,
     max_tokens_approx: int = 1500,
+    min_chunks: int = 1,
 ) -> Tuple[str, List[DocumentChunk]]:
     selected_chunks: List[DocumentChunk] = []
     context_pieces = []
     total_chars = 0
 
+    # First pass: threshold-based selection
     for chunk, score in chunks_with_scores:
         if score < min_score:
             continue
         text = chunk.text.strip()
         if not text:
             continue
-
         if total_chars + len(text) + 50 > max_tokens_approx * 4:
             break
 
@@ -477,6 +499,25 @@ def build_context_from_chunks(
         )
         selected_chunks.append(chunk)
         total_chars += len(text) + 50
+
+    # Fallback: always include at least top chunk(s) if available
+    if len(selected_chunks) < min_chunks:
+        selected_chunks = []
+        context_pieces = []
+        total_chars = 0
+
+        for chunk, score in chunks_with_scores[:max(min_chunks, 1)]:
+            text = chunk.text.strip()
+            if not text:
+                continue
+            if total_chars + len(text) + 50 > max_tokens_approx * 4:
+                break
+
+            context_pieces.append(
+                f"[SOURCE: {chunk.source_path} | CHUNK_ID: {chunk.chunk_id} | SCORE: {score:.3f}]\n{text}"
+            )
+            selected_chunks.append(chunk)
+            total_chars += len(text) + 50
 
     context = "\n\n---\n\n".join(context_pieces)
     return context, selected_chunks
@@ -511,7 +552,16 @@ def call_ollama_generate(
     timeout_read: float = 120.0,
     stream: bool = False,
 ) -> str:
-    payload = {"model": model, "prompt": prompt, "stream": stream}
+    # Keep generations deterministic so behavior is stable across runs/modes.
+    payload = {
+        "model": model,
+        "prompt": prompt,
+        "stream": stream,
+        "options": {
+            "temperature": 0,
+            "top_p": 1,
+        },
+    }
     url = f"{base_url}/api/generate"
     resp = requests.post(url, json=payload, timeout=(timeout_connect, timeout_read), stream=stream)
     resp.raise_for_status()
@@ -540,6 +590,36 @@ def _is_abstention(text: str) -> bool:
     return (
         "final_answer:" in t and "i don't know" in t
     ) or ("i don't know based on the provided documents" in t)
+
+def _extract_quoted_evidence(text: str) -> List[str]:
+    if not text:
+        return []
+    quoted = re.findall(r'"([^"\n]{8,})"', text)
+    out: List[str] = []
+    seen = set()
+    for q in quoted:
+        qn = q.strip()
+        if not qn or qn in seen:
+            continue
+        seen.add(qn)
+        out.append(qn)
+    return out
+
+def _extract_evidence_section_quotes(text: str) -> List[str]:
+    """
+    Extract quoted strings specifically from the EVIDENCE section.
+    """
+    if not text:
+        return []
+
+    m = re.search(r"EVIDENCE:\s*(.*?)(?:\n\s*SOURCES:|\Z)", text, flags=re.IGNORECASE | re.DOTALL)
+    if not m:
+        return []
+
+    block = m.group(1).strip()
+    if not block:
+        return []
+    return _extract_quoted_evidence(block)
 
 def entailment_judge(
     context: str,
@@ -589,7 +669,28 @@ Return ONLY valid JSON:
         timeout_read=timeout_read,
         stream=False,
     )
-    obj = _extract_json_object(raw) or {}
+
+    obj = _extract_json_object(raw)
+    if obj is None:
+        # Retry once with a stricter formatting reminder.
+        retry_prompt = prompt + "\n\nIMPORTANT: Output ONLY raw JSON object with keys supported and reason. No markdown/code fences."
+        retry_raw = call_ollama_generate(
+            prompt=retry_prompt,
+            model=model,
+            base_url=base_url,
+            timeout_read=timeout_read,
+            stream=False,
+        )
+        obj = _extract_json_object(retry_raw)
+
+    if obj is None:
+        # Last-resort heuristic: trust only when verbatim quotes in answer appear in context.
+        quotes = _extract_quoted_evidence(model_output)
+        matched = any(q in context for q in quotes)
+        if matched:
+            return True, "Judge parse failed; accepted via verbatim evidence quote match"
+        return False, "Judge parse failed; no verifiable evidence quotes matched context"
+
     supported = bool(obj.get("supported", False))
     reason = str(obj.get("reason", "")).strip()
     return supported, reason
@@ -797,9 +898,108 @@ class MemoryRouter:
         referential_patterns = [
             r"\b(this|that|these|those|it|they|them|he|she|his|her|its|their)\b",
             r"\b(above|earlier|previous|before|last time|as mentioned|you said|we said|again)\b",
-            r"\b(follow up|follow-up|continue|same as|what about that|that one)\b",
+            r"\b(follow up|follow-up|continue|same as|what about that|that one|what about|how about)\b",
         ]
         return any(re.search(p, q) for p in referential_patterns)
+
+    def _contains_pronoun_reference(self, user_query: str) -> bool:
+        q = (user_query or "").lower()
+        if not q:
+            return False
+        return bool(re.search(r"\b(it|its|they|them|their|that|those|these|he|she|his|her)\b", q))
+
+    def _rewrite_with_recent_focus(self, user_query: str, recent_focus_entity: str) -> str:
+        """
+        Deterministic rewrite for short pronoun-led follow-ups.
+        Example: "does it support life?" -> "does saturn support life?"
+        """
+        q = (user_query or "").strip()
+        focus = (recent_focus_entity or "").strip()
+        if not q or not focus:
+            return ""
+
+        if not self._contains_pronoun_reference(q):
+            return ""
+
+        # Be conservative: only rewrite short follow-up questions where pronoun is
+        # likely the subject and there is little standalone context.
+        starts_with_aux_pronoun = bool(re.match(
+            r"^\s*(do|does|did|is|are|was|were|can|could|will|would|has|have|had)\s+"
+            r"(it|they|that|those|these|he|she)\b",
+            q,
+            flags=re.IGNORECASE,
+        ))
+        content_terms = extract_content_terms(q)
+        if not starts_with_aux_pronoun and len(content_terms) > 3:
+            return ""
+
+        rewritten = re.sub(
+            r"\b(it|they|them|their|its|that|those|these|he|she|his|her)\b",
+            focus,
+            q,
+            count=1,
+            flags=re.IGNORECASE,
+        )
+        rewritten = re.sub(r"\s+", " ", rewritten).strip()
+        return rewritten
+
+    def _last_user_query_from_recent_window(self, recent_window: str) -> str:
+        if not recent_window:
+            return ""
+
+        lines = [ln.strip() for ln in recent_window.splitlines() if ln.strip()]
+        user_turns: List[str] = []
+        for ln in lines:
+            if ln.lower().startswith("user:"):
+                user_turns.append(ln.split(":", 1)[1].strip())
+
+        for txt in reversed(user_turns):
+            low = txt.lower().strip()
+            if not low:
+                continue
+            if low in {"exit", "quit", "clear", "reset"}:
+                continue
+            return txt
+        return ""
+
+    def _heuristic_followup_rewrite(self, user_query: str, recent_window: str) -> str:
+        """
+        Generic fallback for elliptical follow-ups like "what about fish".
+        Reuses the prior user question intent and swaps referential subject with the new entity.
+        """
+        q = (user_query or "").strip()
+        if not q:
+            return ""
+
+        m = re.match(r"^\s*(?:what|how)\s+about\s+(.+?)\s*[?.!]*\s*$", q, flags=re.IGNORECASE)
+        if not m:
+            return ""
+
+        entity = m.group(1).strip()
+        if not entity:
+            return ""
+
+        prev_q = self._last_user_query_from_recent_window(recent_window)
+        if not prev_q:
+            return ""
+
+        prev_q_clean = prev_q.strip().rstrip("?.!")
+        if not prev_q_clean:
+            return ""
+
+        # Avoid chaining ambiguous follow-ups onto another ambiguous follow-up.
+        if re.match(r"^\s*(?:what|how)\s+about\b", prev_q_clean, flags=re.IGNORECASE):
+            return ""
+
+        pron_pat = r"\b(they|them|their|it|its|that|those|these)\b"
+        if re.search(pron_pat, prev_q_clean, flags=re.IGNORECASE):
+            rewritten = re.sub(pron_pat, entity, prev_q_clean, flags=re.IGNORECASE)
+        else:
+            # If no pronoun is present, preserve previous intent and scope to the new entity.
+            rewritten = f"{prev_q_clean} about {entity}"
+
+        rewritten = re.sub(r"\s+", " ", rewritten).strip()
+        return rewritten
 
     def _looks_self_contained_factual(self, user_query: str) -> bool:
         q = (user_query or "").strip().lower()
@@ -864,6 +1064,14 @@ Summary state:
             need_retrieval = False
             retrieval_query = ""
 
+        # Deterministic guardrail: pronoun-led queries are referential by default.
+        # Keep this separate from rewrite so router rationale/tier reflects behavior.
+        if self._contains_pronoun_reference(user_query):
+            tier = 1
+            need_retrieval = False
+            retrieval_query = ""
+            rationale = "Referential pronoun query; use recent window for coreference resolution."
+
         # Guardrail: avoid over-selecting tier 1 for standalone factual questions.
         if tier == 1 and self._looks_self_contained_factual(user_query) and not self._looks_recent_reference(user_query):
             tier = 2
@@ -873,6 +1081,11 @@ Summary state:
 
         if tier == 3 and not retrieval_query:
             retrieval_query = user_query
+
+        # Normalize rationale text so debug logs reflect policy intent clearly.
+        if tier == 2 and not self._contains_pronoun_reference(user_query):
+            rationale = "Standalone query; using Tier 2 default path (recent+summary available, no long-term retrieval)."
+
         return MemoryDecision(tier=tier, need_retrieval=need_retrieval, retrieval_query=retrieval_query, rationale=rationale)
 
     def rewrite_for_retrieval_and_routing(
@@ -881,32 +1094,48 @@ Summary state:
         recent_window: str,
         summary_state: str,
         retrieved_memory_snippets: str,
+        recent_focus_entity: str = "",
     ) -> str:
+        focus_rewrite = self._rewrite_with_recent_focus(user_query, recent_focus_entity)
+        if focus_rewrite:
+            return focus_rewrite
+
+        heuristic = self._heuristic_followup_rewrite(user_query, recent_window)
+        if heuristic:
+            return heuristic
+
+        """
+        Conservative rewrite:
+        - If the query is already self-contained, return it unchanged.
+        - Only use the LLM when there are likely unresolved references.
+        """
+        if not self._looks_recent_reference(user_query):
+            return user_query.strip()
+
         prompt = f"""
-Rewrite the user's query into a standalone, explicit query suitable for retrieval and agent routing.
+    Rewrite the user's query into a standalone, explicit query suitable for retrieval and agent routing.
 
-Hard rules:
-- Return EXACTLY ONE LINE.
-- Do NOT add quotes.
-- Do NOT add explanations or prefaces.
-- KEEP ALL IMPORTANT KEYWORDS from the user query verbatim (especially named foods, products, animals).
-- Do NOT generalize (e.g., do not replace "ramen" with "food" or "diet").
-- If no pronouns/references exist, return the original query unchanged.
+    Hard rules:
+    - Return EXACTLY ONE LINE.
+    - Do NOT add quotes.
+    - Do NOT add explanations or prefaces.
+    - KEEP ALL IMPORTANT KEYWORDS from the user query verbatim.
+    - Do NOT introduce any new topic, entity, food, animal, product, place, or concept.
+    - Resolve pronouns/references ONLY if clearly supported by the provided conversation memory.
+    - If the reference cannot be resolved confidently, return the original query unchanged.
 
-Use provided conversation memory ONLY to resolve references; do not invent facts.
+    User query:
+    {user_query}
 
-User query:
-{user_query}
+    Recent window:
+    {recent_window if recent_window else "[empty]"}
 
-Recent window:
-{recent_window if recent_window else "[empty]"}
+    Summary state:
+    {summary_state if summary_state else "[empty]"}
 
-Summary state:
-{summary_state if summary_state else "[empty]"}
-
-Retrieved long-term memory snippets (may be empty):
-{retrieved_memory_snippets if retrieved_memory_snippets else "[empty]"}
-""".strip()
+    Retrieved long-term memory snippets (may be empty):
+    {retrieved_memory_snippets if retrieved_memory_snippets else "[empty]"}
+    """.strip()
 
         rewritten = call_ollama_generate(
             prompt=prompt,
@@ -917,10 +1146,12 @@ Retrieved long-term memory snippets (may be empty):
         )
         return (rewritten or "").strip() or user_query
 
-    def sanitize_rewrite_output(self, raw: str, fallback: str) -> str:
+    def sanitize_rewrite_output(self, raw: str, fallback: str, grounding_text: str = "") -> str:
         """
-        Prevent topic-drift: if the rewrite doesn't overlap with the original query, keep original.
-        Also strips common junk, quotes, and multi-line outputs.
+        Prevent topic drift.
+        Accept a rewrite only if:
+        - it overlaps with the original content terms, and
+        - it does not introduce too many new content terms.
         """
         if not raw:
             return fallback
@@ -943,18 +1174,46 @@ Retrieved long-term memory snippets (may be empty):
         if not filtered:
             filtered = lines
 
-        # Strip surrounding quotes if any
         filtered = [ln.strip().strip('"').strip("'").strip() for ln in filtered if ln.strip()]
 
-        fb_terms = set(extract_content_terms(fallback))
+        fallback_terms = set(extract_content_terms(fallback))
 
         def overlap_count(ln: str) -> int:
-            return len(fb_terms & set(extract_content_terms(ln)))
+            return len(fallback_terms & set(extract_content_terms(ln)))
 
-        # pick best overlap first; tie-breaker: shorter
-        best = max(filtered, key=lambda ln: (overlap_count(ln), -len(ln)))
+        def new_terms_count(ln: str) -> int:
+            cand_terms = set(extract_content_terms(ln))
+            return len(cand_terms - fallback_terms)
+
+        grounding_terms = set(extract_content_terms(grounding_text or ""))
+
+        best = max(filtered, key=lambda ln: (overlap_count(ln), -new_terms_count(ln), -len(ln)))
         if overlap_count(best) == 0:
-            return fallback  # <- CRITICAL: no overlap => don't drift to unrelated topic
+            return fallback
+
+        # Guardrail: don't allow rewrites that drop most content terms from the user question.
+        if fallback_terms:
+            best_terms = set(extract_content_terms(best))
+            retained = len(fallback_terms & best_terms) / max(1, len(fallback_terms))
+            if retained < 0.6:
+                return fallback
+
+        # Reject rewrites that introduce lots of new content terms only when the
+        # original query already had enough content terms to preserve intent.
+        if len(fallback_terms) >= 3 and new_terms_count(best) > 1:
+            return fallback
+
+        # For short/ambiguous referential queries, only allow introduced terms that
+        # are grounded in conversation memory provided to the rewriter.
+        if self._contains_pronoun_reference(fallback):
+            best_terms = set(extract_content_terms(best))
+            introduced = best_terms - fallback_terms
+            if introduced:
+                if not grounding_terms:
+                    return fallback
+                if any(term not in grounding_terms for term in introduced):
+                    return fallback
+
         return best.strip() or fallback
 
 # =============================================================================
@@ -962,11 +1221,70 @@ Retrieved long-term memory snippets (may be empty):
 # =============================================================================
 
 class SimpleRAG:
-    def __init__(self, data_dir: str, embed_model_name: str = "all-MiniLM-L6-v2"):
+    def __init__(
+        self,
+        data_dir: str,
+        embed_model_name: str = "all-MiniLM-L6-v2",
+        retrieval_mode: str = "hybrid",
+        hybrid_alpha: float = 0.6,
+    ):
         self.data_dir = data_dir
         cache_dir = cache_dir_for_agent(data_dir, embed_model_name)
         self.index = EmbeddingIndex(model_name=embed_model_name, cache_dir=cache_dir)
+        self.retrieval_mode = retrieval_mode
+        self.hybrid_alpha = float(hybrid_alpha)
+        self._tfidf: Optional[TfidfVectorizer] = None
+        self._tfidf_matrix = None
         self._built = False
+
+    def _build_tfidf(self):
+        texts = [ch.text for ch in self.index.chunks]
+        if not texts:
+            raise ValueError(f"No chunks available for TF-IDF build in {self.data_dir}")
+        self._tfidf = TfidfVectorizer(
+            lowercase=True,
+            max_features=50000,
+            ngram_range=(1, 2),
+        )
+        self._tfidf_matrix = self._tfidf.fit_transform(texts)
+
+    def _search_tfidf(self, query: str, top_k: int = 5) -> List[Tuple[DocumentChunk, float]]:
+        if self._tfidf is None or self._tfidf_matrix is None or not self.index.chunks:
+            raise RuntimeError("TF-IDF index not built.")
+
+        q_t = self._tfidf.transform([query])
+        doc_dot = (self._tfidf_matrix @ q_t.T).toarray().reshape(-1)
+        doc_norms = np.sqrt(self._tfidf_matrix.multiply(self._tfidf_matrix).sum(axis=1)).A1 + 1e-10
+        q_norm = np.sqrt(q_t.multiply(q_t).sum()) + 1e-10
+        scores = doc_dot / (doc_norms * q_norm)
+
+        top_k = min(top_k, len(self.index.chunks))
+        idxs = np.argsort(scores)[::-1][:top_k]
+        return [(self.index.chunks[idx], float(scores[idx])) for idx in idxs]
+
+    def search(self, query: str, top_k: int = 5) -> List[Tuple[DocumentChunk, float]]:
+        if self.retrieval_mode == "dense_only":
+            return self.index.search(query, top_k=top_k)
+
+        if self.retrieval_mode == "lexical_only":
+            return self._search_tfidf(query, top_k=top_k)
+
+        dense_hits = self.index.search(query, top_k=len(self.index.chunks))
+        lexical_hits = self._search_tfidf(query, top_k=len(self.index.chunks))
+
+        dense_scores = {chunk.chunk_id: score for chunk, score in dense_hits}
+        lexical_scores = {chunk.chunk_id: score for chunk, score in lexical_hits}
+        chunk_by_id = {chunk.chunk_id: chunk for chunk in self.index.chunks}
+
+        hybrid_scores = []
+        for chunk_id, chunk in chunk_by_id.items():
+            d = dense_scores.get(chunk_id, 0.0)
+            l = lexical_scores.get(chunk_id, 0.0)
+            score = self.hybrid_alpha * d + (1.0 - self.hybrid_alpha) * l
+            hybrid_scores.append((chunk, float(score)))
+
+        hybrid_scores.sort(key=lambda x: x[1], reverse=True)
+        return hybrid_scores[: min(top_k, len(hybrid_scores))]
 
     def build_index(self):
         print(f"[RAG] Preparing index for: {self.data_dir}")
@@ -975,6 +1293,7 @@ class SimpleRAG:
         if self.index.try_load(expected_fingerprint=fp):
             print(f"[RAG] Loaded cached index from: {self.index.cache_dir}")
             print(f"[RAG] Cached chunks: {len(self.index.chunks)}\n")
+            self._build_tfidf()
             self._built = True
             return
 
@@ -985,6 +1304,7 @@ class SimpleRAG:
         self.index.fit(chunks)
         self.index.save(fp)
         print(f"[RAG] Saved cached index to: {self.index.cache_dir}")
+        self._build_tfidf()
         self._built = True
         print("[RAG] Index built.\n")
 
@@ -1002,10 +1322,10 @@ class SimpleRAG:
         if not self._built:
             raise RuntimeError("Index not built. Call build_index() first.")
 
-        retrieved = self.index.search(retrieval_query, top_k=top_k)
+        retrieved = self.search(retrieval_query, top_k=top_k)
         top_scores = [float(s) for _, s in retrieved] if retrieved else []
 
-        if not retrieved or retrieved[0][1] < min_score:
+        if not retrieved:
             return RAGResult(
                 answer="I couldn’t find any document that seems relevant.\nTry rephrasing your query.",
                 used_sources=[],
@@ -1017,7 +1337,14 @@ class SimpleRAG:
                 _context="",
             )
 
-        context, selected_chunks = build_context_from_chunks(retrieved, min_score=min_score)
+        context, selected_chunks = build_context_from_chunks(
+            retrieved,
+            min_score=min_score,
+            min_chunks=1,
+        )
+
+        had_low_confidence = bool(retrieved and retrieved[0][1] < min_score)
+
         if not selected_chunks:
             return RAGResult(
                 answer="Documents retrieved, but none were confidently relevant.\nTry rephrasing your query.",
@@ -1086,16 +1413,27 @@ EVIDENCE:
             used_sources=unique_paths,
             missing_terms=missing_terms,
             top_scores=top_scores,
-            had_low_confidence=False,
+            had_low_confidence=had_low_confidence,
             judge_rejected=False,
             _selected_chunks=selected_chunks,
             _context=context,
         )
 
 class RAGAgent:
-    def __init__(self, spec: AgentSpec, embed_model_name: str):
+    def __init__(
+        self,
+        spec: AgentSpec,
+        embed_model_name: str,
+        retrieval_mode: str = "hybrid",
+        hybrid_alpha: float = 0.6,
+    ):
         self.spec = spec
-        self.rag = SimpleRAG(data_dir=spec.data_dir, embed_model_name=embed_model_name)
+        self.rag = SimpleRAG(
+            data_dir=spec.data_dir,
+            embed_model_name=embed_model_name,
+            retrieval_mode=retrieval_mode,
+            hybrid_alpha=hybrid_alpha,
+        )
 
     def build(self):
         self.rag.build_index()
@@ -1124,10 +1462,10 @@ class RAGAgent:
 
     def peek_retrieval_score(self, query: str) -> float:
         """
-        Cheap routing primitive: "how well does this agent match the query?"
+        Cheap routing primitive aligned with the agent's active retrieval mode.
         """
         try:
-            hits = self.rag.index.search(query, top_k=1)
+            hits = self.rag.search(query, top_k=1)
             return float(hits[0][1]) if hits else -1.0
         except Exception:
             return -1.0
@@ -1177,11 +1515,15 @@ class AnswerEvaluator:
         require_sources: bool = True,
         min_top_score: float = 0.15,
         min_top_score_for_abstention: float = 0.30,
+        min_query_coverage: float = 0.25,
+        low_coverage_top_score_floor: float = 0.30,
     ):
         self.max_missing_terms = max_missing_terms
         self.require_sources = require_sources
         self.min_top_score = min_top_score
         self.min_top_score_for_abstention = min_top_score_for_abstention
+        self.min_query_coverage = float(min_query_coverage)
+        self.low_coverage_top_score_floor = float(low_coverage_top_score_floor)
 
     def is_good(self, query: str, result: RAGResult, selected_chunks: List[DocumentChunk]) -> Tuple[bool, str]:
         if result.judge_rejected:
@@ -1194,26 +1536,39 @@ class AnswerEvaluator:
             return False, f"Top retrieval score too low ({result.top_scores[0]:.3f})"
 
         lowered = (result.answer or "").lower()
-        is_abstention = ("final_answer:" in lowered and "i don't know" in lowered) or ("i don't know based on the provided documents" in lowered)
+        is_abstention = (
+            ("final_answer:" in lowered and "i don't know" in lowered)
+            or ("i don't know based on the provided documents" in lowered)
+        )
 
         if self.require_sources and not result.used_sources and not is_abstention:
             return False, "No sources used"
 
-        if len(result.missing_terms) > self.max_missing_terms:
-            return False, f"Too many missing terms ({len(result.missing_terms)}): {result.missing_terms}"
+        query_terms = extract_content_terms(query)
+        if query_terms:
+            coverage = max(0.0, 1.0 - (len(result.missing_terms) / max(1, len(query_terms))))
+        else:
+            coverage = 1.0
 
-        # Abstentions are allowed only when retrieval is still topically relevant.
+        top1 = float(result.top_scores[0]) if result.top_scores else 0.0
+
         if is_abstention:
-            if result.top_scores and result.top_scores[0] < self.min_top_score_for_abstention:
-                return False, f"Abstention from weakly relevant retrieval ({result.top_scores[0]:.3f})"
-            query_terms = extract_content_terms(query)
-            if query_terms and len(result.missing_terms) >= len(query_terms):
+            if result.top_scores and top1 < self.min_top_score_for_abstention:
+                return False, f"Abstention from weakly relevant retrieval ({top1:.3f})"
+            if query_terms and coverage <= 0.0:
                 return False, "Abstention from context with zero query-term coverage"
             return True, "OK (abstained)"
 
-        # For non-abstaining answers, require explicit coverage of key query terms in retrieved context.
-        if result.missing_terms:
-            return False, f"Missing key query terms in evidence: {result.missing_terms}"
+        evidence_quotes = _extract_evidence_section_quotes(result.answer)
+        if len(evidence_quotes) < 1:
+            return False, "No quoted evidence in EVIDENCE block for non-abstained answer"
+
+        # Generic quality gate: only reject on weak lexical coverage when retrieval confidence is also weak.
+        if coverage < self.min_query_coverage and top1 < self.low_coverage_top_score_floor:
+            return False, f"Weak query-context coverage ({coverage:.2f}) with low retrieval confidence ({top1:.3f})"
+
+        if len(result.missing_terms) > self.max_missing_terms and top1 < self.low_coverage_top_score_floor:
+            return False, f"Too many missing terms ({len(result.missing_terms)}) under weak retrieval confidence"
 
         return True, "OK"
 
@@ -1275,6 +1630,38 @@ class Orchestrator:
         scored.sort(key=lambda x: x[1], reverse=True)
         return scored
 
+    def _extract_recent_focus_entity(self) -> str:
+        """
+        Extract a likely conversational focus entity from the most recent assistant turn.
+        Uses source filenames first (most reliable in this pipeline), then a fallback phrase.
+        """
+        turns = self.memory_recent.turns
+        for turn in reversed(turns):
+            if turn.role != "assistant":
+                continue
+
+            text = (turn.text or "").strip()
+            if not text:
+                continue
+
+            src_matches = re.findall(r"-\s+([^\n\r]+\.(?:txt|md|json))", text, flags=re.IGNORECASE)
+            if src_matches:
+                first_src = src_matches[0].strip().strip('"').strip("'")
+                base = os.path.basename(first_src)
+                stem, _ = os.path.splitext(base)
+                stem = re.sub(r"[_\-]+", " ", stem).strip()
+                if stem:
+                    return stem
+
+            m = re.search(r"FINAL_ANSWER:\s*([^\n\r]{4,120})", text, flags=re.IGNORECASE)
+            if m:
+                first_clause = m.group(1).strip()
+                toks = re.findall(r"[A-Za-z][A-Za-z0-9_-]{2,}", first_clause)
+                if toks:
+                    return toks[0]
+
+        return ""
+
     def answer(
         self,
         user_query: str,
@@ -1323,8 +1710,9 @@ class Orchestrator:
             recent_window=recent_text if decision.tier >= 1 else "",
             summary_state=summary_text if decision.tier >= 2 else "",
             retrieved_memory_snippets=retrieved_block if decision.tier == 3 else "",
+            recent_focus_entity=self._extract_recent_focus_entity(),
         )
-        retrieval_query = self.router.sanitize_rewrite_output(raw_rewrite, user_query)
+        retrieval_query = self.router.sanitize_rewrite_output(raw_rewrite, user_query, grounding_text=convo_block)
 
         # 5) Multi-attempt: try best-retrieving agents first
         history_notes: List[str] = []
@@ -1488,6 +1876,8 @@ def ensure_agent_from_path(
     path: str,
     embed_model_name: str,
     orchestrator: Orchestrator,
+    retrieval_mode: str = "hybrid",
+    hybrid_alpha: float = 0.6,
     debug: bool = True,
 ) -> Optional[str]:
     p = os.path.abspath(path)
@@ -1518,7 +1908,7 @@ def ensure_agent_from_path(
         return agent_name
 
     spec = AgentSpec(name=agent_name, description=default_agent_description(agent_name), data_dir=p)
-    agent = RAGAgent(spec, embed_model_name=embed_model_name)
+    agent = RAGAgent(spec, embed_model_name=embed_model_name, retrieval_mode=retrieval_mode, hybrid_alpha=hybrid_alpha)
 
     print(f"[AutoAgent] Creating new agent '{agent_name}' from: {p}")
     agent.build()
@@ -1535,7 +1925,7 @@ def parse_args():
     parser.add_argument("--data_dir", type=str, required=True, help="Path to directory containing agent subfolders of .txt files.")
     parser.add_argument("--embed_model_name", type=str, default="all-MiniLM-L6-v2", help="Sentence-transformers model name for embeddings.")
     parser.add_argument("--top_k", type=int, default=5, help="Number of chunks to retrieve.")
-    parser.add_argument("--min_score", type=float, default=0.15, help="Minimum cosine similarity score for chunk inclusion.")
+    parser.add_argument("--min_score", type=float, default=0.10, help="Minimum cosine similarity score for chunk inclusion.")
     parser.add_argument("--ollama_model", type=str, default="llama3:8b", help="Which Ollama model to use.")
     parser.add_argument("--max_attempts", type=int, default=3, help="Max orchestrator attempts (try different agents).")
     parser.add_argument("--debug", action="store_true", help="Print router/planner/evaluator debug logs.")
@@ -1544,6 +1934,14 @@ def parse_args():
     parser.add_argument("--memory_recent_turns", type=int, default=12, help="Recent window size (turns).")
     parser.add_argument("--memory_alpha", type=float, default=0.6, help="Hybrid memory alpha: vector weight vs TF-IDF.")
     parser.add_argument("--memory_store_dir", type=str, default=".conv_memory", help="Persist dir for long-term conv memory.")
+    parser.add_argument(
+        "--mode",
+        type=str,
+        default="full",
+        choices=["dense_only", "lexical_only", "single_agent", "full"],
+        help="Baseline / system mode to run.",
+    )
+    parser.add_argument("--hybrid_alpha", type=float, default=0.6, help="Hybrid retrieval weight for dense score in hybrid modes.")
     return parser.parse_args()
 
 def discover_agents_from_root(data_dir: str) -> List[AgentSpec]:
@@ -1586,7 +1984,7 @@ class SystemConfig:
     data_dir: str
     embed_model_name: str = "all-MiniLM-L6-v2"
     top_k: int = 5
-    min_score: float = 0.15
+    min_score: float = 0.10
     ollama_model: str = "llama3:8b"
     max_attempts: int = 3
     debug: bool = False
@@ -1595,6 +1993,8 @@ class SystemConfig:
     memory_recent_turns: int = 12
     memory_alpha: float = 0.6
     memory_store_dir: str = ".conv_memory"
+    mode: str = "full"
+    hybrid_alpha: float = 0.6
 
 def config_from_args(args) -> SystemConfig:
     return SystemConfig(
@@ -1610,10 +2010,29 @@ def config_from_args(args) -> SystemConfig:
         memory_recent_turns=args.memory_recent_turns,
         memory_alpha=args.memory_alpha,
         memory_store_dir=args.memory_store_dir,
+        mode=args.mode,
+        hybrid_alpha=args.hybrid_alpha,
     )
 
 def build_system(config: SystemConfig) -> Tuple[Orchestrator, SystemConfig]:
-    agent_specs = discover_agents_from_root(config.data_dir)
+    retrieval_mode_map = {
+        "dense_only": "dense_only",
+        "lexical_only": "lexical_only",
+        "single_agent": "hybrid",
+        "full": "hybrid",
+    }
+    rag_retrieval_mode = retrieval_mode_map.get(config.mode, "hybrid")
+
+    if config.mode == "single_agent":
+        agent_specs = [
+            AgentSpec(
+                name="single_agent",
+                description="Single unified RAG index over the full corpus.",
+                data_dir=config.data_dir,
+            )
+        ]
+    else:
+        agent_specs = discover_agents_from_root(config.data_dir)
 
     if not agent_specs:
         raise ValueError(f"No valid agent folders found in {config.data_dir}")
@@ -1625,7 +2044,12 @@ def build_system(config: SystemConfig) -> Tuple[Orchestrator, SystemConfig]:
                 f"Missing agent folder: {spec.data_dir}\n"
                 f"Expected subfolders under --data_dir."
             )
-        agent = RAGAgent(spec, embed_model_name=config.embed_model_name)
+        agent = RAGAgent(
+            spec,
+            embed_model_name=config.embed_model_name,
+            retrieval_mode=rag_retrieval_mode,
+            hybrid_alpha=config.hybrid_alpha,
+        )
         agents.append(agent)
 
     print("[System] Building indices for all agents...")
@@ -1661,7 +2085,7 @@ def build_system(config: SystemConfig) -> Tuple[Orchestrator, SystemConfig]:
         memory_summary=memory_summary,
         memory_longterm=memory_longterm,
         router=router,
-        max_attempts=config.max_attempts,
+        max_attempts=(1 if config.mode == "single_agent" else config.max_attempts),
         debug=config.debug,
         base_url=config.ollama_base_url,
         timeout_read=config.ollama_timeout_read,
@@ -1674,58 +2098,14 @@ def main():
     args = parse_args()
     _log_runtime_embedding_device_once()
 
-    agent_specs = discover_agents_from_root(args.data_dir)
-
-    if not agent_specs:
-        raise ValueError(f"No valid agent folders found in {args.data_dir}")
-
-    agents: List[RAGAgent] = []
-    for spec in agent_specs:
-        if not os.path.isdir(spec.data_dir):
-            raise ValueError(
-                f"Missing agent folder: {spec.data_dir}\n"
-                f"Expected subfolders under --data_dir: recipes/, tech/, animals/"
-            )
-        agent = RAGAgent(spec, embed_model_name=args.embed_model_name)
-        agents.append(agent)
-
-    print("[System] Building indices for all agents...")
-    for a in agents:
-        print(f"\n[System] Building agent '{a.spec.name}' from: {a.spec.data_dir}")
-        a.build()
-
-    memory_recent = RecentWindowMemory(max_turns=args.memory_recent_turns)
-    memory_summary = SummaryStateMemory(initial_summary="")
-    memory_longterm = LongTermConversationStore(
-        embed_model_name=args.embed_model_name,
-        alpha=args.memory_alpha,
-        persist_path=args.memory_store_dir,
-    )
-    router = MemoryRouter(
-        ollama_model=args.ollama_model,
-        base_url=args.ollama_base_url,
-        timeout_read=args.ollama_timeout_read,
-    )
-
-    planner = Planner(agent_specs=agent_specs, model_name=args.embed_model_name)  # kept
-    evaluator = AnswerEvaluator(max_missing_terms=3, require_sources=True, min_top_score=args.min_score)
-
-    orch = Orchestrator(
-        agents=agents,
-        planner=planner,
-        evaluator=evaluator,
-        memory_recent=memory_recent,
-        memory_summary=memory_summary,
-        memory_longterm=memory_longterm,
-        router=router,
-        max_attempts=args.max_attempts,
-        debug=args.debug,
-        base_url=args.ollama_base_url,
-        timeout_read=args.ollama_timeout_read,
-    )
+    orch, config = build_system_from_args(args)
+    memory_recent = orch.memory_recent
+    memory_summary = orch.memory_summary
+    memory_longterm = orch.memory_longterm
 
     print("\nAgentic RAG System ready (Three-tier memory)")
-    print(f"LLM Model: {args.ollama_model}")
+    print(f"Mode: {config.mode}")
+    print(f"LLM Model: {config.ollama_model}")
     print("Agents: " + ", ".join(sorted(orch.agents_by_name.keys())))
     print("Commands:")
     print("  - add <path-to-folder-or-txt>   (auto create agent + index)")
@@ -1759,13 +2139,11 @@ def main():
         if cmd == "reset":
             memory_recent.clear()
             memory_summary.clear()
-            # Delete long-term memory store on disk
-            shutil.rmtree(args.memory_store_dir, ignore_errors=True)
-            # Recreate store object empty (so further adds work)
+            shutil.rmtree(config.memory_store_dir, ignore_errors=True)
             memory_longterm = LongTermConversationStore(
-                embed_model_name=args.embed_model_name,
-                alpha=args.memory_alpha,
-                persist_path=args.memory_store_dir,
+                embed_model_name=config.embed_model_name,
+                alpha=config.memory_alpha,
+                persist_path=config.memory_store_dir,
             )
             orch.memory_longterm = memory_longterm
             print("\nSystem:\nReset memory (recent+summary cleared, long-term store deleted).\n" + "=" * 80 + "\n")
@@ -1776,14 +2154,19 @@ def main():
             orch.print_agent_description(agent_name)
             continue
 
-        # store user in tier-1 window + tier-3 store
         memory_recent.add("user", raw)
         memory_longterm.add_turn("user", raw)
 
-        # explicit add command
         add_path = parse_add_command(raw)
         if add_path:
-            created = ensure_agent_from_path(add_path, args.embed_model_name, orch, debug=args.debug)
+            created = ensure_agent_from_path(
+                add_path,
+                config.embed_model_name,
+                orch,
+                retrieval_mode=("hybrid" if config.mode in {"full", "single_agent"} else config.mode),
+                hybrid_alpha=config.hybrid_alpha,
+                debug=config.debug,
+            )
             msg = (
                 f"Added/available agent: {created}. Current agents: {', '.join(sorted(orch.agents_by_name.keys()))}"
                 if created else
@@ -1797,15 +2180,21 @@ def main():
             memory_summary.update_with_llm(
                 user_text=raw,
                 assistant_text=msg,
-                model=args.ollama_model,
-                base_url=args.ollama_base_url,
-                timeout_read=args.ollama_timeout_read,
+                model=config.ollama_model,
+                base_url=config.ollama_base_url,
+                timeout_read=config.ollama_timeout_read,
             )
             continue
 
-        # implicit path detection
         if looks_like_path(raw.strip('"').strip("'")):
-            created = ensure_agent_from_path(raw.strip('"').strip("'"), args.embed_model_name, orch, debug=args.debug)
+            created = ensure_agent_from_path(
+                raw.strip('"').strip("'"),
+                config.embed_model_name,
+                orch,
+                retrieval_mode=("hybrid" if config.mode in {"full", "single_agent"} else config.mode),
+                hybrid_alpha=config.hybrid_alpha,
+                debug=config.debug,
+            )
             if created:
                 msg = f"Detected path and added/available agent: {created}. Now ask your question about those files."
                 print("\nSystem:\n")
@@ -1816,18 +2205,17 @@ def main():
                 memory_summary.update_with_llm(
                     user_text=raw,
                     assistant_text=msg,
-                    model=args.ollama_model,
-                    base_url=args.ollama_base_url,
-                    timeout_read=args.ollama_timeout_read,
+                    model=config.ollama_model,
+                    base_url=config.ollama_base_url,
+                    timeout_read=config.ollama_timeout_read,
                 )
                 continue
 
-        # normal QA
         result, _dbg = orch.answer(
             user_query=raw,
-            top_k=args.top_k,
-            min_score=args.min_score,
-            ollama_model=args.ollama_model,
+            top_k=config.top_k,
+            min_score=config.min_score,
+            ollama_model=config.ollama_model,
         )
 
         print("\nRAG:\n")
@@ -1840,9 +2228,9 @@ def main():
         memory_summary.update_with_llm(
             user_text=raw,
             assistant_text=assistant_text_for_memory,
-            model=args.ollama_model,
-            base_url=args.ollama_base_url,
-            timeout_read=args.ollama_timeout_read,
+            model=config.ollama_model,
+            base_url=config.ollama_base_url,
+            timeout_read=config.ollama_timeout_read,
         )
 
 if __name__ == "__main__":
