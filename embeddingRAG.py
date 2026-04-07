@@ -5,6 +5,11 @@ import time
 import argparse
 import hashlib
 import shutil
+import io
+import logging
+import threading
+import warnings
+from contextlib import redirect_stdout, redirect_stderr
 from dataclasses import dataclass
 from typing import List, Tuple, Optional, Dict, Any
 
@@ -12,6 +17,80 @@ import numpy as np
 import requests
 from sentence_transformers import SentenceTransformer
 from sklearn.feature_extraction.text import TfidfVectorizer
+
+# Reuse loaded embedding models and silence noisy HF/transformers load reports.
+_MODEL_CACHE: Dict[str, SentenceTransformer] = {}
+_MODEL_CACHE_LOCK = threading.Lock()
+_RUNTIME_DEVICE_LOGGED = False
+
+
+def _embedding_device() -> str:
+    try:
+        import torch  # type: ignore
+
+        if torch.cuda.is_available():
+            return "cuda"
+    except Exception:
+        pass
+    return "cpu"
+
+
+def _log_runtime_embedding_device_once() -> None:
+    global _RUNTIME_DEVICE_LOGGED
+    if _RUNTIME_DEVICE_LOGGED:
+        return
+
+    device = _embedding_device()
+    msg = f"[Runtime] Embedding device={device}"
+    if device == "cuda":
+        try:
+            import torch  # type: ignore
+
+            msg += f" gpu={torch.cuda.get_device_name(0)}"
+        except Exception:
+            pass
+    print(msg)
+    _RUNTIME_DEVICE_LOGGED = True
+
+
+def _load_sentence_transformer(model_name: str) -> SentenceTransformer:
+    with _MODEL_CACHE_LOCK:
+        cached = _MODEL_CACHE.get(model_name)
+        if cached is not None:
+            return cached
+
+        device = _embedding_device()
+
+        hf_logger = logging.getLogger("huggingface_hub")
+        st_logger = logging.getLogger("sentence_transformers")
+        prev_hf_level = hf_logger.level
+        prev_st_level = st_logger.level
+
+        tf_logging = None
+        prev_tf_verbosity = None
+        try:
+            from transformers.utils import logging as tf_logging  # type: ignore
+            prev_tf_verbosity = tf_logging.get_verbosity()
+            tf_logging.set_verbosity_error()
+        except Exception:
+            tf_logging = None
+
+        hf_logger.setLevel(logging.ERROR)
+        st_logger.setLevel(logging.ERROR)
+
+        try:
+            with warnings.catch_warnings():
+                warnings.filterwarnings("ignore", message=".*unauthenticated requests to the HF Hub.*")
+                with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+                    model = SentenceTransformer(model_name, device=device)
+        finally:
+            hf_logger.setLevel(prev_hf_level)
+            st_logger.setLevel(prev_st_level)
+            if tf_logging is not None and prev_tf_verbosity is not None:
+                tf_logging.set_verbosity(prev_tf_verbosity)
+
+        _MODEL_CACHE[model_name] = model
+        return model
 
 # =============================================================================
 # Data structures
@@ -235,7 +314,7 @@ class EmbeddingIndex:
 
     def load_model(self):
         if self.model is None:
-            self.model = SentenceTransformer(self.model_name)
+            self.model = _load_sentence_transformer(self.model_name)
 
     def _paths(self) -> Dict[str, str]:
         if not self.cache_dir:
@@ -599,7 +678,7 @@ class LongTermConversationStore:
         self.alpha = float(alpha)
         self.persist_path = persist_path
 
-        self.model: SentenceTransformer = SentenceTransformer(self.embed_model_name)
+        self.model: SentenceTransformer = _load_sentence_transformer(self.embed_model_name)
 
         self.docs: List[str] = []
         self.meta: List[Dict[str, Any]] = []
@@ -711,6 +790,27 @@ class MemoryRouter:
         self.base_url = base_url
         self.timeout_read = timeout_read
 
+    def _looks_recent_reference(self, user_query: str) -> bool:
+        q = (user_query or "").lower()
+        if not q:
+            return False
+        referential_patterns = [
+            r"\b(this|that|these|those|it|they|them|he|she|his|her|its|their)\b",
+            r"\b(above|earlier|previous|before|last time|as mentioned|you said|we said|again)\b",
+            r"\b(follow up|follow-up|continue|same as|what about that|that one)\b",
+        ]
+        return any(re.search(p, q) for p in referential_patterns)
+
+    def _looks_self_contained_factual(self, user_query: str) -> bool:
+        q = (user_query or "").strip().lower()
+        if not q:
+            return False
+
+        starts_like_question = bool(re.match(r"^(do|does|did|is|are|can|could|what|which|who|where|when|why|how)\b", q))
+        has_question_mark = "?" in q
+        content_tokens = re.findall(r"[a-z]{3,}", q)
+        return (starts_like_question or has_question_mark) and len(content_tokens) >= 2
+
     def decide(self, user_query: str, recent_window: str, summary_state: str) -> MemoryDecision:
         prompt = f"""
 You are a routing module for a 3-tier memory system.
@@ -729,9 +829,13 @@ Return ONLY valid JSON with this schema:
   "rationale": "short reason"
 }}
 
-Choose Tier 1 unless clearly insufficient.
-Choose Tier 2 if the summary likely contains the needed referenced facts.
-Choose Tier 3 if the referenced info is likely NOT in recent or summary, or needs exact older details.
+Decision policy:
+- Use Tier 1 ONLY when the user clearly refers to very recent turns (pronouns/deixis like "that", "it", "as you said").
+- Use Tier 2 for self-contained factual/domain questions that do not depend on recent turns.
+- Use Tier 3 only if exact older conversation details are needed and likely not covered by recent+summary.
+
+Do not claim "recent conversation likely contains the answer" for standalone factual questions.
+Example: "do dogs eat ramen" is standalone factual and should not be routed to Tier 1 by default.
 
 User query:
 {user_query}
@@ -759,6 +863,14 @@ Summary state:
         if tier != 3:
             need_retrieval = False
             retrieval_query = ""
+
+        # Guardrail: avoid over-selecting tier 1 for standalone factual questions.
+        if tier == 1 and self._looks_self_contained_factual(user_query) and not self._looks_recent_reference(user_query):
+            tier = 2
+            need_retrieval = False
+            retrieval_query = ""
+            rationale = "Self-contained factual query with explicit entities; avoid recent-window bias."
+
         if tier == 3 and not retrieval_query:
             retrieval_query = user_query
         return MemoryDecision(tier=tier, need_retrieval=need_retrieval, retrieval_query=retrieval_query, rationale=rationale)
@@ -1026,7 +1138,7 @@ class RAGAgent:
 
 class Planner:
     def __init__(self, agent_specs: List[AgentSpec], model_name: str = "all-MiniLM-L6-v2"):
-        self.model = SentenceTransformer(model_name)
+        self.model = _load_sentence_transformer(model_name)
         self.agent_specs: List[AgentSpec] = []
         self.agent_desc_emb: Optional[np.ndarray] = None
         self.refresh(agent_specs)
@@ -1059,10 +1171,17 @@ class Planner:
 # =============================================================================
 
 class AnswerEvaluator:
-    def __init__(self, max_missing_terms: int = 3, require_sources: bool = True, min_top_score: float = 0.15):
+    def __init__(
+        self,
+        max_missing_terms: int = 3,
+        require_sources: bool = True,
+        min_top_score: float = 0.15,
+        min_top_score_for_abstention: float = 0.30,
+    ):
         self.max_missing_terms = max_missing_terms
         self.require_sources = require_sources
         self.min_top_score = min_top_score
+        self.min_top_score_for_abstention = min_top_score_for_abstention
 
     def is_good(self, query: str, result: RAGResult, selected_chunks: List[DocumentChunk]) -> Tuple[bool, str]:
         if result.judge_rejected:
@@ -1074,16 +1193,27 @@ class AnswerEvaluator:
         if result.top_scores and result.top_scores[0] < self.min_top_score:
             return False, f"Top retrieval score too low ({result.top_scores[0]:.3f})"
 
-        if self.require_sources and not result.used_sources:
+        lowered = (result.answer or "").lower()
+        is_abstention = ("final_answer:" in lowered and "i don't know" in lowered) or ("i don't know based on the provided documents" in lowered)
+
+        if self.require_sources and not result.used_sources and not is_abstention:
             return False, "No sources used"
 
         if len(result.missing_terms) > self.max_missing_terms:
             return False, f"Too many missing terms ({len(result.missing_terms)}): {result.missing_terms}"
 
-        # If model abstains, allow it; it's correct behavior when context doesn't support the answer.
-        lowered = (result.answer or "").lower()
-        if ("final_answer:" in lowered and "i don't know" in lowered) or ("i don't know based on the provided documents" in lowered):
+        # Abstentions are allowed only when retrieval is still topically relevant.
+        if is_abstention:
+            if result.top_scores and result.top_scores[0] < self.min_top_score_for_abstention:
+                return False, f"Abstention from weakly relevant retrieval ({result.top_scores[0]:.3f})"
+            query_terms = extract_content_terms(query)
+            if query_terms and len(result.missing_terms) >= len(query_terms):
+                return False, "Abstention from context with zero query-term coverage"
             return True, "OK (abstained)"
+
+        # For non-abstaining answers, require explicit coverage of key query terms in retrieved context.
+        if result.missing_terms:
+            return False, f"Missing key query terms in evidence: {result.missing_terms}"
 
         return True, "OK"
 
@@ -1272,6 +1402,17 @@ class Orchestrator:
                 print(f"[Eval] ok={ok} reason={reason} top_score={ts:.3f} missing_terms={len(result.missing_terms)} sources={len(result.used_sources)}")
 
             if ok:
+                # Avoid misleading citations when the model abstains.
+                if _is_abstention(result.answer):
+                    result.answer = re.sub(r"\n\nSOURCES:\n(?:- .*(?:\n|$))+", "", result.answer.strip(), flags=re.IGNORECASE).strip()
+                    result.used_sources = []
+                    return result, {
+                        "tier": decision.tier,
+                        "router_rationale": decision.rationale,
+                        "retrieved_memory": retrieved_snips,
+                        "rewritten_query": retrieval_query,
+                    }
+
                 result.answer = f"[Agent: {chosen_spec.name}]\n" + result.answer
                 return result, {
                     "tier": decision.tier,
@@ -1295,6 +1436,19 @@ class Orchestrator:
             )
 
         # Best-effort wrapping
+        if history_notes:
+            last_result.answer = "FINAL_ANSWER: I don't know based on the provided documents."
+            last_result.used_sources = []
+            last_result.judge_rejected = False
+            last_result.had_low_confidence = True
+            return last_result, {
+                "tier": decision.tier,
+                "router_rationale": decision.rationale,
+                "retrieved_memory": retrieved_snips,
+                "rewritten_query": retrieval_query,
+                "attempt_failures": history_notes,
+            }
+
         if not last_result.had_low_confidence and not last_result.judge_rejected:
             last_result.answer = "[Orchestrator] Best-effort answer (confidence checks did not fully pass):\n\n" + last_result.answer
 
@@ -1392,26 +1546,138 @@ def parse_args():
     parser.add_argument("--memory_store_dir", type=str, default=".conv_memory", help="Persist dir for long-term conv memory.")
     return parser.parse_args()
 
+def discover_agents_from_root(data_dir: str) -> List[AgentSpec]:
+    specs = []
+
+    for entry in os.listdir(data_dir):
+        full_path = os.path.join(data_dir, entry)
+
+        if not os.path.isdir(full_path):
+            continue
+
+        # Check if folder contains at least one .txt file (recursive)
+        has_txt = False
+        for root, _, files in os.walk(full_path):
+            if any(f.lower().endswith(".txt") for f in files):
+                has_txt = True
+                break
+
+        if not has_txt:
+            continue
+
+        specs.append(
+            AgentSpec(
+                name=entry,
+                description=default_agent_description(entry),
+                data_dir=full_path,
+            )
+        )
+
+    return specs
+
+
+
+# =============================================================================
+# Reusable system builder for evaluation / scripting
+# =============================================================================
+
+@dataclass
+class SystemConfig:
+    data_dir: str
+    embed_model_name: str = "all-MiniLM-L6-v2"
+    top_k: int = 5
+    min_score: float = 0.15
+    ollama_model: str = "llama3:8b"
+    max_attempts: int = 3
+    debug: bool = False
+    ollama_base_url: str = "http://localhost:11434"
+    ollama_timeout_read: float = 120.0
+    memory_recent_turns: int = 12
+    memory_alpha: float = 0.6
+    memory_store_dir: str = ".conv_memory"
+
+def config_from_args(args) -> SystemConfig:
+    return SystemConfig(
+        data_dir=args.data_dir,
+        embed_model_name=args.embed_model_name,
+        top_k=args.top_k,
+        min_score=args.min_score,
+        ollama_model=args.ollama_model,
+        max_attempts=args.max_attempts,
+        debug=args.debug,
+        ollama_base_url=args.ollama_base_url,
+        ollama_timeout_read=args.ollama_timeout_read,
+        memory_recent_turns=args.memory_recent_turns,
+        memory_alpha=args.memory_alpha,
+        memory_store_dir=args.memory_store_dir,
+    )
+
+def build_system(config: SystemConfig) -> Tuple[Orchestrator, SystemConfig]:
+    agent_specs = discover_agents_from_root(config.data_dir)
+
+    if not agent_specs:
+        raise ValueError(f"No valid agent folders found in {config.data_dir}")
+
+    agents: List[RAGAgent] = []
+    for spec in agent_specs:
+        if not os.path.isdir(spec.data_dir):
+            raise ValueError(
+                f"Missing agent folder: {spec.data_dir}\n"
+                f"Expected subfolders under --data_dir."
+            )
+        agent = RAGAgent(spec, embed_model_name=config.embed_model_name)
+        agents.append(agent)
+
+    print("[System] Building indices for all agents...")
+    for a in agents:
+        print(f"\n[System] Building agent '{a.spec.name}' from: {a.spec.data_dir}")
+        a.build()
+
+    memory_recent = RecentWindowMemory(max_turns=config.memory_recent_turns)
+    memory_summary = SummaryStateMemory(initial_summary="")
+    memory_longterm = LongTermConversationStore(
+        embed_model_name=config.embed_model_name,
+        alpha=config.memory_alpha,
+        persist_path=config.memory_store_dir,
+    )
+    router = MemoryRouter(
+        ollama_model=config.ollama_model,
+        base_url=config.ollama_base_url,
+        timeout_read=config.ollama_timeout_read,
+    )
+
+    planner = Planner(agent_specs=agent_specs, model_name=config.embed_model_name)
+    evaluator = AnswerEvaluator(
+        max_missing_terms=3,
+        require_sources=True,
+        min_top_score=config.min_score,
+    )
+
+    orch = Orchestrator(
+        agents=agents,
+        planner=planner,
+        evaluator=evaluator,
+        memory_recent=memory_recent,
+        memory_summary=memory_summary,
+        memory_longterm=memory_longterm,
+        router=router,
+        max_attempts=config.max_attempts,
+        debug=config.debug,
+        base_url=config.ollama_base_url,
+        timeout_read=config.ollama_timeout_read,
+    )
+    return orch, config
+
+def build_system_from_args(args) -> Tuple[Orchestrator, SystemConfig]:
+    return build_system(config_from_args(args))
 def main():
     args = parse_args()
+    _log_runtime_embedding_device_once()
 
-    agent_specs = [
-        AgentSpec(
-            name="Recipes",
-            description="Cooking, baking, ingredients, nutrition, recipes, substitutions, kitchen techniques.",
-            data_dir=os.path.join(args.data_dir, "recipes"),
-        ),
-        AgentSpec(
-            name="Tech",
-            description="Programming, computers, software, networking, ML/AI, troubleshooting, tools, libraries.",
-            data_dir=os.path.join(args.data_dir, "tech"),
-        ),
-        AgentSpec(
-            name="Animals",
-            description="Animals, species info, habitats, behavior, biology, pets, wildlife, animal care.",
-            data_dir=os.path.join(args.data_dir, "animals"),
-        ),
-    ]
+    agent_specs = discover_agents_from_root(args.data_dir)
+
+    if not agent_specs:
+        raise ValueError(f"No valid agent folders found in {args.data_dir}")
 
     agents: List[RAGAgent] = []
     for spec in agent_specs:
