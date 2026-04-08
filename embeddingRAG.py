@@ -1378,6 +1378,9 @@ STRICT RULES:
 - Use ONLY the Context for factual claims. Do NOT use outside knowledge.
 - If the Context does not explicitly support the answer, you MUST say:
   FINAL_ANSWER: I don't know based on the provided documents.
+- For yes/no questions, answer yes/no ONLY when the Context explicitly states that claim for the same subject.
+- Never infer a negative ("no", "does not", "cannot") from missing evidence or from facts about a different subject.
+- If a yes/no claim is not explicitly stated for the asked subject, abstain with the required I don't know line.
 - EVIDENCE bullets must be exact verbatim quotes copied from the Context.
 - Do NOT write meta-statements like "none of the chunks mention X" as evidence.
 
@@ -1630,6 +1633,28 @@ class Orchestrator:
         scored.sort(key=lambda x: x[1], reverse=True)
         return scored
 
+    def _select_candidate_agents(self, ranked: List[Tuple[AgentSpec, float]]) -> List[Tuple[AgentSpec, float]]:
+        """
+        Restrict retries to plausible agents.
+        - If top agent is clearly dominant, keep only that agent.
+        - Otherwise keep near-top agents only, preventing cross-domain drift.
+        """
+        if not ranked:
+            return []
+
+        top_spec, top_score = ranked[0]
+        second_score = ranked[1][1] if len(ranked) > 1 else -1.0
+
+        # Dominance guardrail: avoid trying unrelated agents when one agent clearly wins.
+        if top_score >= 0.25 and (top_score - second_score) >= 0.12:
+            return [(top_spec, top_score)]
+
+        # Keep retries near the best score only.
+        max_gap = 0.08
+        min_floor = max(0.10, top_score - max_gap)
+        filtered = [(spec, sc) for spec, sc in ranked if sc >= min_floor and (top_score - sc) <= max_gap]
+        return filtered or [(top_spec, top_score)]
+
     def _extract_recent_focus_entity(self) -> str:
         """
         Extract a likely conversational focus entity from the most recent assistant turn.
@@ -1717,8 +1742,14 @@ class Orchestrator:
         # 5) Multi-attempt: try best-retrieving agents first
         history_notes: List[str] = []
 
+        ranked_all = self.rank_agents_by_retrieval(retrieval_query, top_k_peek=1)
+        ranked_candidates = self._select_candidate_agents(ranked_all)
+        if self.debug and ranked_candidates:
+            cand_msg = ", ".join(f"{spec.name}:{score:.3f}" for spec, score in ranked_candidates)
+            print(f"[AgentRoute] Candidates: {cand_msg}")
+
         for attempt in range(self.max_attempts):
-            ranked = self.rank_agents_by_retrieval(retrieval_query, top_k_peek=1)
+            ranked = ranked_candidates
             if not ranked:
                 return (
                     RAGResult(
@@ -1739,7 +1770,7 @@ class Orchestrator:
                     chosen_score = score
                     break
             if chosen_spec is None:
-                chosen_spec, chosen_score = ranked[0]
+                break
 
             tried.add(chosen_spec.name)
             agent = self.agents_by_name[chosen_spec.name]
@@ -2019,7 +2050,7 @@ def build_system(config: SystemConfig) -> Tuple[Orchestrator, SystemConfig]:
         "dense_only": "dense_only",
         "lexical_only": "lexical_only",
         "single_agent": "hybrid",
-        "full": "hybrid",
+        "full": "dense_only",
     }
     rag_retrieval_mode = retrieval_mode_map.get(config.mode, "hybrid")
 
@@ -2163,7 +2194,7 @@ def main():
                 add_path,
                 config.embed_model_name,
                 orch,
-                retrieval_mode=("hybrid" if config.mode in {"full", "single_agent"} else config.mode),
+                retrieval_mode=("hybrid" if config.mode == "single_agent" else config.mode),
                 hybrid_alpha=config.hybrid_alpha,
                 debug=config.debug,
             )
@@ -2191,7 +2222,7 @@ def main():
                 raw.strip('"').strip("'"),
                 config.embed_model_name,
                 orch,
-                retrieval_mode=("hybrid" if config.mode in {"full", "single_agent"} else config.mode),
+                retrieval_mode=("hybrid" if config.mode == "single_agent" else config.mode),
                 hybrid_alpha=config.hybrid_alpha,
                 debug=config.debug,
             )

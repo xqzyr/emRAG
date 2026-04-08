@@ -2,9 +2,10 @@ import json
 import os
 import time
 import argparse
-from typing import Iterable, List, Set
+import shutil
+from typing import Iterable, List, Set, Optional, Tuple
 
-from embeddingRAG import SystemConfig, build_system
+from embeddingRAG import SystemConfig, build_system, LongTermConversationStore
 
 
 def normalize_source(path: str) -> str:
@@ -57,6 +58,33 @@ def retrieval_metrics(result, expected_sources: List[str]):
     }
 
 
+def reset_conversation_memory(system, config: SystemConfig) -> None:
+    system.memory_recent.clear()
+    system.memory_summary.clear()
+    shutil.rmtree(config.memory_store_dir, ignore_errors=True)
+    system.memory_longterm = LongTermConversationStore(
+        embed_model_name=config.embed_model_name,
+        alpha=config.memory_alpha,
+        persist_path=config.memory_store_dir,
+    )
+
+
+def add_turn_to_memory(system, config: SystemConfig, user_text: str, assistant_text: str) -> None:
+    system.memory_recent.add("user", user_text)
+    system.memory_longterm.add_turn("user", user_text)
+
+    assistant_for_memory = (assistant_text or "")[:1200]
+    system.memory_recent.add("assistant", assistant_for_memory)
+    system.memory_longterm.add_turn("assistant", assistant_for_memory)
+    system.memory_summary.update_with_llm(
+        user_text=user_text,
+        assistant_text=assistant_for_memory,
+        model=config.ollama_model,
+        base_url=config.ollama_base_url,
+        timeout_read=config.ollama_timeout_read,
+    )
+
+
 def evaluate(
     dataset_path: str = "eval_set.json",
     data_dir: str = "data",
@@ -80,11 +108,22 @@ def evaluate(
     system, config = build_system(config)
 
     results = []
-    for item in dataset:
+    active_conversation: Optional[str] = None
+
+    for idx, item in enumerate(dataset):
         query = item["query"]
         expected_keywords = item["expected_answer_keywords"]
         expected_sources = item["relevant_sources"]
+        conversation_id = item.get("conversation_id")
+        turn_id = item.get("turn_id")
 
+        isolated = conversation_id is None
+        should_reset = isolated or conversation_id != active_conversation or bool(item.get("reset_conversation", False))
+        if should_reset:
+            reset_conversation_memory(system, config)
+            active_conversation = None if isolated else conversation_id
+
+        # For conversational examples, preload previous turns by keeping memory state.
         t0 = time.time()
         result, dbg = system.answer(
             user_query=query,
@@ -99,6 +138,9 @@ def evaluate(
         ret = retrieval_metrics(result, expected_sources)
 
         results.append({
+            "index": idx,
+            "conversation_id": conversation_id,
+            "turn_id": turn_id,
             "query": query,
             "mode": mode,
             "answer": result.answer,
@@ -116,6 +158,10 @@ def evaluate(
             "debug": dbg,
         })
 
+        # Only persist dialogue state for conversation chains.
+        if conversation_id is not None:
+            add_turn_to_memory(system, config, query, result.answer)
+
     return results
 
 
@@ -127,16 +173,27 @@ def summarize(results):
     avg_sel_src = sum(r["selected_source_score"] for r in results) / len(results)
     avg_latency = sum(r["latency_sec"] for r in results) / len(results)
 
+    factual = [r for r in results if r.get("conversation_id") is None]
+    conversational = [r for r in results if r.get("conversation_id") is not None]
+
     print("Average Accuracy:", round(avg_acc, 3))
     print("Source Attribution:", round(avg_src, 3))
     print("Retrieval Hit Rate:", round(avg_ret_hit, 3))
     print("Retrieval Recall:", round(avg_ret_recall, 3))
     print("Selected Source Score:", round(avg_sel_src, 3))
     print("Average Latency (s):", round(avg_latency, 3))
+    print("Total Queries:", len(results))
+    print("Factual Queries:", len(factual))
+    print("Conversational Turns:", len(conversational))
+
+    if factual:
+        print("Factual Accuracy:", round(sum(r["accuracy"] for r in factual) / len(factual), 3))
+    if conversational:
+        print("Conversational Accuracy:", round(sum(r["accuracy"] for r in conversational) / len(conversational), 3))
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Evaluate AgenticRAG baseline modes.")
+    parser = argparse.ArgumentParser(description="Evaluate AgenticRAG on mixed factual + multi-turn benchmarks.")
     parser.add_argument("--dataset_path", type=str, default="eval_set.json")
     parser.add_argument("--data_dir", type=str, default="data")
     parser.add_argument("--memory_store_dir", type=str, default=".conv_memory_eval")

@@ -1,129 +1,490 @@
 [
   {
-    "query": "What is the average lifespan of a dog?",
-    "expected_answer_keywords": ["10", "13", "years"],
-    "relevant_sources": ["Dogs.txt"]
+    "query": "How long does a typical dog usually live?",
+    "expected_answer_keywords": [
+      "10",
+      "13",
+      "years"
+    ],
+    "relevant_sources": [
+      "Dogs.txt"
+    ]
   },
   {
-    "query": "How long do domestic cats usually live?",
-    "expected_answer_keywords": ["12", "18", "years"],
-    "relevant_sources": ["Cats.txt"]
+    "query": "What lifespan range is common for domestic cats?",
+    "expected_answer_keywords": [
+      "12",
+      "18",
+      "years"
+    ],
+    "relevant_sources": [
+      "Cats.txt"
+    ]
   },
   {
-    "query": "What do wolves typically eat?",
-    "expected_answer_keywords": ["herbivores", "deer", "elk"],
-    "relevant_sources": ["Wolves.txt"]
+    "query": "What prey do wolves often hunt?",
+    "expected_answer_keywords": [
+      "deer",
+      "elk"
+    ],
+    "relevant_sources": [
+      "Wolves.txt"
+    ]
   },
   {
-    "query": "What do elephants mainly consume?",
-    "expected_answer_keywords": ["grasses", "fruits", "leaves"],
-    "relevant_sources": ["Elephants.txt"]
-  },
-
-  {
-    "query": "Which animal has a stronger sense of smell than humans?",
-    "expected_answer_keywords": ["dogs", "smell"],
-    "relevant_sources": ["Dogs.txt"]
-  },
-  {
-    "query": "Which animal is more independent, cats or dogs?",
-    "expected_answer_keywords": ["cats", "independent"],
-    "relevant_sources": ["Cats.txt", "Dogs.txt"]
-  },
-
-  {
-    "query": "What is a GPU used for?",
-    "expected_answer_keywords": ["parallel", "graphics", "machine learning"],
-    "relevant_sources": ["GPUs.txt"]
+    "query": "What kinds of plants do elephants eat?",
+    "expected_answer_keywords": [
+      "grasses",
+      "fruits",
+      "leaves"
+    ],
+    "relevant_sources": [
+      "Elephants.txt"
+    ]
   },
   {
-    "query": "Why are GPUs useful for machine learning tasks?",
-    "expected_answer_keywords": ["parallel", "matrix", "computation"],
-    "relevant_sources": ["GPUs.txt"]
+    "query": "Which animal is noted for a stronger sense of smell than humans?",
+    "expected_answer_keywords": [
+      "dogs",
+      "smell"
+    ],
+    "relevant_sources": [
+      "Dogs.txt"
+    ]
   },
   {
-    "query": "What is the main function of a CPU?",
-    "expected_answer_keywords": ["instructions", "processing", "operations"],
-    "relevant_sources": ["CPUs.txt"]
+    "query": "Between cats and dogs, which tends to be more self-sufficient?",
+    "expected_answer_keywords": [
+      "cats",
+      "independent"
+    ],
+    "relevant_sources": [
+      "Cats.txt",
+      "Dogs.txt"
+    ]
   },
   {
-    "query": "Which processor is better for sequential tasks?",
-    "expected_answer_keywords": ["cpu", "sequential"],
-    "relevant_sources": ["CPUs.txt", "GPUs.txt"]
-  },
-
-  {
-    "query": "What is RAM used for in a computer?",
-    "expected_answer_keywords": ["memory", "data", "running programs"],
-    "relevant_sources": ["RAM.txt"]
-  },
-  {
-    "query": "Why are SSDs faster than hard drives?",
-    "expected_answer_keywords": ["no moving parts", "flash", "speed"],
-    "relevant_sources": ["SSDs.txt"]
-  },
-
-  {
-    "query": "What ingredients are typically used in ramen?",
-    "expected_answer_keywords": ["noodles", "broth", "meat", "eggs"],
-    "relevant_sources": ["Ramen.txt"]
+    "query": "What do dogs commonly eat?",
+    "expected_answer_keywords": [
+      "meat",
+      "grains",
+      "dog food"
+    ],
+    "relevant_sources": [
+      "Dogs.txt"
+    ]
   },
   {
-    "query": "What are common toppings on pizza?",
-    "expected_answer_keywords": ["cheese", "tomato", "meat", "vegetables"],
-    "relevant_sources": ["Pizza.txt"]
+    "query": "How long do wolves usually live in the wild?",
+    "expected_answer_keywords": [
+      "6",
+      "8",
+      "years"
+    ],
+    "relevant_sources": [
+      "Wolves.txt"
+    ]
   },
   {
-    "query": "What are some types of pasta?",
-    "expected_answer_keywords": ["spaghetti", "penne", "fusilli"],
-    "relevant_sources": ["Pasta.txt"]
+    "query": "What kind of work are GPUs especially good at?",
+    "expected_answer_keywords": [
+      "parallel",
+      "graphics",
+      "machine learning"
+    ],
+    "relevant_sources": [
+      "GPUs.txt"
+    ]
   },
   {
-    "query": "What is sushi made of?",
-    "expected_answer_keywords": ["rice", "fish", "seaweed"],
-    "relevant_sources": ["Sushi.txt"]
-  },
-
-  {
-    "query": "Which planet supports life?",
-    "expected_answer_keywords": ["earth", "life"],
-    "relevant_sources": ["Earth.txt"]
-  },
-  {
-    "query": "Why is Mars called the Red Planet?",
-    "expected_answer_keywords": ["red", "appearance"],
-    "relevant_sources": ["Mars.txt"]
+    "query": "Why do GPUs help with machine learning workloads?",
+    "expected_answer_keywords": [
+      "parallel",
+      "simultaneous",
+      "operations"
+    ],
+    "relevant_sources": [
+      "GPUs.txt"
+    ]
   },
   {
-    "query": "What is Jupiter mainly made of?",
-    "expected_answer_keywords": ["hydrogen", "helium"],
-    "relevant_sources": ["Jupiter.txt"]
+    "query": "What job does the CPU handle in a computer?",
+    "expected_answer_keywords": [
+      "instructions",
+      "operations",
+      "processor"
+    ],
+    "relevant_sources": [
+      "CPUs.txt"
+    ]
   },
   {
-    "query": "What is Saturn known for?",
-    "expected_answer_keywords": ["rings"],
-    "relevant_sources": ["Saturn.txt"]
+    "query": "Which processor is more suitable for sequential work?",
+    "expected_answer_keywords": [
+      "cpu",
+      "sequential"
+    ],
+    "relevant_sources": [
+      "CPUs.txt",
+      "GPUs.txt"
+    ]
   },
-
   {
+    "query": "What is RAM for while programs are running?",
+    "expected_answer_keywords": [
+      "memory",
+      "data",
+      "running programs"
+    ],
+    "relevant_sources": [
+      "RAM.txt"
+    ]
+  },
+  {
+    "query": "Why can SSDs read and write faster than hard drives?",
+    "expected_answer_keywords": [
+      "no moving parts",
+      "flash",
+      "faster"
+    ],
+    "relevant_sources": [
+      "SSDs.txt"
+    ]
+  },
+  {
+    "query": "What makes SSDs more durable than hard drives?",
+    "expected_answer_keywords": [
+      "no mechanical components",
+      "durable"
+    ],
+    "relevant_sources": [
+      "SSDs.txt"
+    ]
+  },
+  {
+    "query": "What devices are Meta Glasses designed to support?",
+    "expected_answer_keywords": [
+      "photo",
+      "video",
+      "voice"
+    ],
+    "relevant_sources": [
+      "MetaGlasses.txt"
+    ]
+  },
+  {
+    "query": "What does ramen commonly include?",
+    "expected_answer_keywords": [
+      "noodles",
+      "broth",
+      "pork",
+      "eggs"
+    ],
+    "relevant_sources": [
+      "Ramen.txt"
+    ]
+  },
+  {
+    "query": "Which toppings are often put on pizza?",
+    "expected_answer_keywords": [
+      "cheese",
+      "tomato",
+      "vegetables"
+    ],
+    "relevant_sources": [
+      "Pizza.txt"
+    ]
+  },
+  {
+    "query": "Name a few common pasta varieties.",
+    "expected_answer_keywords": [
+      "spaghetti",
+      "penne",
+      "fusilli"
+    ],
+    "relevant_sources": [
+      "Pasta.txt"
+    ]
+  },
+  {
+    "query": "What are the main ingredients in sushi?",
+    "expected_answer_keywords": [
+      "rice",
+      "fish",
+      "seaweed"
+    ],
+    "relevant_sources": [
+      "Sushi.txt"
+    ]
+  },
+  {
+    "query": "What broth styles are common in ramen?",
+    "expected_answer_keywords": [
+      "soy sauce",
+      "miso",
+      "salt",
+      "tonkotsu"
+    ],
+    "relevant_sources": [
+      "Ramen.txt"
+    ]
+  },
+  {
+    "query": "What condiments are sushi often served with?",
+    "expected_answer_keywords": [
+      "soy sauce",
+      "wasabi",
+      "pickled ginger"
+    ],
+    "relevant_sources": [
+      "Sushi.txt"
+    ]
+  },
+  {
+    "query": "What sauces are commonly served with pasta?",
+    "expected_answer_keywords": [
+      "tomato sauce",
+      "cream",
+      "pesto"
+    ],
+    "relevant_sources": [
+      "Pasta.txt"
+    ]
+  },
+  {
+    "query": "What is the most traditional style of pizza mentioned in the dataset?",
+    "expected_answer_keywords": [
+      "neapolitan"
+    ],
+    "relevant_sources": [
+      "Pizza.txt"
+    ]
+  },
+  {
+    "query": "Which planet in the dataset supports life?",
+    "expected_answer_keywords": [
+      "earth",
+      "life"
+    ],
+    "relevant_sources": [
+      "Earth.txt"
+    ]
+  },
+  {
+    "query": "Why does Mars look red?",
+    "expected_answer_keywords": [
+      "red",
+      "reddish",
+      "appearance"
+    ],
+    "relevant_sources": [
+      "Mars.txt"
+    ]
+  },
+  {
+    "query": "What gases make up most of Jupiter?",
+    "expected_answer_keywords": [
+      "hydrogen",
+      "helium"
+    ],
+    "relevant_sources": [
+      "Jupiter.txt"
+    ]
+  },
+  {
+    "query": "What feature is Saturn most famous for?",
+    "expected_answer_keywords": [
+      "rings"
+    ],
+    "relevant_sources": [
+      "Saturn.txt"
+    ]
+  },
+  {
+    "query": "How are Jupiter and Saturn alike in composition?",
+    "expected_answer_keywords": [
+      "hydrogen",
+      "helium"
+    ],
+    "relevant_sources": [
+      "Jupiter.txt",
+      "Saturn.txt"
+    ]
+  },
+  {
+    "query": "Which planet has oxygen in its atmosphere?",
+    "expected_answer_keywords": [
+      "earth",
+      "oxygen"
+    ],
+    "relevant_sources": [
+      "Earth.txt"
+    ]
+  },
+  {
+    "query": "What storm on Jupiter is especially notable?",
+    "expected_answer_keywords": [
+      "great red spot",
+      "storm"
+    ],
+    "relevant_sources": [
+      "Jupiter.txt"
+    ]
+  },
+  {
+    "query": "Which moon of Saturn is highlighted as especially interesting?",
+    "expected_answer_keywords": [
+      "titan"
+    ],
+    "relevant_sources": [
+      "Saturn.txt"
+    ]
+  },
+  {
+    "conversation_id": "conv_ramen",
+    "turn_id": 1,
     "query": "Tell me about ramen.",
-    "expected_answer_keywords": ["noodles", "broth"],
-    "relevant_sources": ["Ramen.txt"]
+    "expected_answer_keywords": [
+      "noodles",
+      "broth"
+    ],
+    "relevant_sources": [
+      "Ramen.txt"
+    ]
   },
   {
-    "query": "What does it usually contain?",
-    "expected_answer_keywords": ["noodles", "broth", "toppings"],
-    "relevant_sources": ["Ramen.txt"]
+    "conversation_id": "conv_ramen",
+    "turn_id": 2,
+    "query": "What broth types are common?",
+    "expected_answer_keywords": [
+      "soy sauce",
+      "miso",
+      "tonkotsu"
+    ],
+    "relevant_sources": [
+      "Ramen.txt"
+    ]
   },
-
   {
+    "conversation_id": "conv_ramen",
+    "turn_id": 3,
+    "query": "What does it usually come with?",
+    "expected_answer_keywords": [
+      "pork",
+      "eggs",
+      "seaweed",
+      "green onions"
+    ],
+    "relevant_sources": [
+      "Ramen.txt"
+    ]
+  },
+  {
+    "conversation_id": "conv_gpu",
+    "turn_id": 1,
     "query": "Explain GPUs.",
-    "expected_answer_keywords": ["parallel", "processing"],
-    "relevant_sources": ["GPUs.txt"]
+    "expected_answer_keywords": [
+      "parallel",
+      "graphics"
+    ],
+    "relevant_sources": [
+      "GPUs.txt"
+    ]
   },
   {
+    "conversation_id": "conv_gpu",
+    "turn_id": 2,
+    "query": "What are they especially good at?",
+    "expected_answer_keywords": [
+      "parallel",
+      "simultaneous operations"
+    ],
+    "relevant_sources": [
+      "GPUs.txt"
+    ]
+  },
+  {
+    "conversation_id": "conv_gpu",
+    "turn_id": 3,
     "query": "How are they different from CPUs?",
-    "expected_answer_keywords": ["parallel", "sequential"],
-    "relevant_sources": ["CPUs.txt", "GPUs.txt"]
+    "expected_answer_keywords": [
+      "parallel",
+      "sequential"
+    ],
+    "relevant_sources": [
+      "GPUs.txt",
+      "CPUs.txt"
+    ]
+  },
+  {
+    "conversation_id": "conv_saturn",
+    "turn_id": 1,
+    "query": "Tell me about Saturn.",
+    "expected_answer_keywords": [
+      "gas giant",
+      "rings"
+    ],
+    "relevant_sources": [
+      "Saturn.txt"
+    ]
+  },
+  {
+    "conversation_id": "conv_saturn",
+    "turn_id": 2,
+    "query": "What is it mainly made of?",
+    "expected_answer_keywords": [
+      "hydrogen",
+      "helium"
+    ],
+    "relevant_sources": [
+      "Saturn.txt"
+    ]
+  },
+  {
+    "conversation_id": "conv_saturn",
+    "turn_id": 3,
+    "query": "What is it best known for?",
+    "expected_answer_keywords": [
+      "rings"
+    ],
+    "relevant_sources": [
+      "Saturn.txt"
+    ]
+  },
+  {
+    "conversation_id": "conv_dogs",
+    "turn_id": 1,
+    "query": "Tell me about dogs.",
+    "expected_answer_keywords": [
+      "loyalty",
+      "intelligence"
+    ],
+    "relevant_sources": [
+      "Dogs.txt"
+    ]
+  },
+  {
+    "conversation_id": "conv_dogs",
+    "turn_id": 2,
+    "query": "How long do they usually live?",
+    "expected_answer_keywords": [
+      "10",
+      "13",
+      "years"
+    ],
+    "relevant_sources": [
+      "Dogs.txt"
+    ]
+  },
+  {
+    "conversation_id": "conv_dogs",
+    "turn_id": 3,
+    "query": "What sense are they especially known for?",
+    "expected_answer_keywords": [
+      "smell"
+    ],
+    "relevant_sources": [
+      "Dogs.txt"
+    ]
   }
 ]
