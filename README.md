@@ -53,8 +53,6 @@ python embeddingRAG.py [OPTIONS]
 
 ### Evaluation 
 
-
-
 ```bash
 python eval.py [OPTIONS]
 ```
@@ -69,6 +67,14 @@ python eval.py [OPTIONS]
 | `--hybrid_alpha`     | Hybrid weighting                                                   | `0.6`               |
 | `--output_path`      | Output JSON file                                                   | `eval_results.json` |
 | `--debug`            | Debug mode                                                         | `False`             |
+
+Example: 
+```bash
+python eval.py --mode dense_only --output_path eval_dense_only.json
+python eval.py --mode lexical_only --output_path eval_lexical_only.json
+python eval.py --mode single_agent --output_path eval_single_agent.json
+python eval.py --mode full --output_path eval_full.json
+```
 
 
 On startup, the system builds or loads cached indexes and then enters interactive mode.
